@@ -3128,3 +3128,71 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
 @media(max-width:1000px){html:not(#_) header#hd .nbd{z-index:200}html:not(#_) header#hd .nbw{z-index:201}.nvx{display:none}}
 
 @media(max-width:1000px){html:not(#_) body:has(#sx:not(.out)):has(#ckb:not([hidden])) .fab{bottom:calc(100px + env(safe-area-inset-bottom,0px))}}
+
+
+/* ===== v92 ===== */
+/* chat buttons: WhatsApp on top, Instagram below with its own glow */
+.fab .fw{order:1}.fab .fi{order:2}
+.fab .fi{animation:fiGlow 2.6s ease-in-out infinite}
+.fab .fi:after{content:"";position:absolute;inset:-2px;border-radius:50%;border:2px solid #fd5949;pointer-events:none;animation:fiRing 2.8s cubic-bezier(.2,.6,.3,1) infinite}
+@keyframes fiRing{0%{transform:scale(1);opacity:.9;border-color:#fd5949}60%{border-color:#d6249f}100%{transform:scale(1.8);opacity:0;border-color:#285AEB}}
+@keyframes fiGlow{0%,100%{box-shadow:0 0 0 1.5px rgba(255,244,214,.9),0 8px 22px rgba(0,0,0,.35),0 0 14px rgba(214,36,159,.45)}50%{box-shadow:0 0 0 1.5px #fff,0 8px 22px rgba(0,0,0,.35),0 0 30px rgba(253,89,73,.85),0 0 48px rgba(214,36,159,.55)}}
+@media(prefers-reduced-motion:reduce){.fab .fi{animation:none}.fab .fi:after{display:none}}
+@media(min-width:1001px){#swa{bottom:170px}}
+
+/* top quick actions (phones): Book / Call / Directions live in the header, bottom bar removed */
+.hact{display:none}
+@media(max-width:1000px){
+ #v10bar{display:none!important}
+ body{padding-bottom:0}
+ #mu{bottom:calc(16px + env(safe-area-inset-bottom,0px))!important}
+ .fab{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+ #swa{bottom:calc(140px + env(safe-area-inset-bottom,0px))}
+ html:not(#_) body:has(#sx:not(.out)) .fab{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+ header#hd .hact{display:flex;position:absolute;right:10px;top:12px;gap:5px;z-index:201}
+ header#hd .hact a{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1.5px solid rgba(247,177,46,.85);color:#FFF4D6;-webkit-tap-highlight-color:transparent;transition:transform .2s,background .2s}
+ header#hd .hact a:active{transform:scale(.92)}
+ header#hd .hact svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+ header#hd .hact a.hb-book{background:#F7B12E;border-color:#F7B12E;color:#1B1206;box-shadow:0 0 14px rgba(247,177,46,.55)}
+}
+@media(max-width:380px){header#hd .hact{right:6px;gap:4px}header#hd .hact a{width:33px;height:33px}}
+
+/* stats count-up */
+.fxf b{position:relative;display:inline-block}
+.fxf b:after{transform:scaleX(0);transform-origin:50% 50%;transition:transform .9s cubic-bezier(.2,.8,.2,1) .2s}
+.fxf li.fx-on b:after{transform:scaleX(1)}
+.fxf li.fx-run .fx-n{text-shadow:0 0 22px rgba(247,177,46,.75),0 0 4px rgba(247,177,46,.5)}
+.fxf li.fx-done .fx-n{animation:fxPop .7s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes fxPop{0%{transform:scale(1)}40%{transform:scale(1.14);text-shadow:0 0 28px rgba(247,177,46,.9)}100%{transform:scale(1)}}
+.fxf .fx-n{display:inline-block;transition:text-shadow .6s}
+@media(prefers-reduced-motion:reduce){.fxf b:after{transform:scaleX(1);transition:none}.fxf li.fx-done .fx-n{animation:none}}
+
+/* intro: shorter, and the caption stays in the sky above the building */
+#sx{--t-wl:2s;--t-cta:9.6s}
+.sx-wm:before{content:"";position:absolute;left:0;right:0;top:-6%;height:118%;z-index:-1;pointer-events:none;background:radial-gradient(62% 80% at 50% 38%,rgba(30,10,0,.5),transparent 78%)}
+@media(min-width:1001px){
+ .sx-wm{top:3%}
+ .sx-st{min-height:clamp(60px,min(8vw,15vh),120px)}
+ .sx-br{font-size:clamp(38px,min(6.4vw,12vh),94px)}
+ .sx-wm small{font-size:clamp(10px,min(1.2vw,2vh),14px)}
+ .sx-tl{font-size:clamp(20px,min(2.6vw,4.6vh),36px)}
+ .sx-wm em{margin-top:2px;padding:6px 18px}
+ .sx-tg{margin-top:6px}
+ .sx-tg span{font-size:clamp(16px,min(2vw,3.4vh),27px);text-shadow:0 1px 2px rgba(40,12,0,.95),0 2px 14px rgba(30,10,0,.95),0 0 30px rgba(30,10,0,.8)}
+}
+@media(min-width:1001px) and (max-height:720px){.sx-tl{display:none}.sx-wm em{margin-top:6px}}
+@media(max-width:1000px){header#hd .nbw{left:106px;top:15px}header#hd .nbw-t{font-size:22px}}
+@media(max-width:380px){header#hd .nbw{left:102px}header#hd .nbw-t{font-size:20px}}
+
+
+/* ===== v92 next-step bands (About, Menu, Catering, Privacy, Terms) ===== */
+.xcta{background:linear-gradient(180deg,#174A32,#103A27);border-top:3px solid #F7B12E;padding:44px 0;color:#FFF4D6;position:relative}
+.xcta-in{display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap}
+.xcta-t h2{font:400 clamp(26px,3.2vw,38px)/1.15 "DM Serif Display",Georgia,serif;margin:0 0 6px;color:#FFF4D6}
+.xcta-t p{margin:0;font-size:16px;line-height:1.5;opacity:.9;max-width:520px}
+.xcta-b{display:flex;gap:12px;flex-wrap:wrap}
+.xcta .xb{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 24px;border-radius:999px;border:1.5px solid rgba(247,177,46,.85);color:#FFF4D6;font:700 15px/1 "DM Sans",system-ui,sans-serif;text-decoration:none;transition:transform .2s,box-shadow .2s,background .2s}
+.xcta .xb:hover{transform:translateY(-2px);background:rgba(247,177,46,.16);box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.xcta .xb.p{background:#F7B12E;color:#1B1206;border-color:#F7B12E;box-shadow:0 0 22px rgba(247,177,46,.35)}
+.xcta .xb.p:hover{background:#FFC24B}
+@media(max-width:700px){.xcta{padding:34px 0 30px}.xcta-in{flex-direction:column;align-items:stretch;gap:18px}.xcta-b{flex-direction:column}.xcta .xb{width:100%}}
