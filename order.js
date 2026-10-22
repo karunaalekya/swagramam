@@ -7,6 +7,7 @@ var CONFIG={
  // [open, close] in minutes after midnight. Monday lunch closes earlier.
  hours:function(dow){return [[720,dow===1?960:990],[1140,1410]]},
  hoursText:"Lunch 12:00 to 4:30 pm (Mon till 4:00 pm) · Dinner 7:00 to 11:30 pm, every day",
+ checkout:"checkout.html",   // online take away checkout (needs the API). Set to null to use only the WhatsApp/UPI flow.
  step:30,          // slot length in minutes
  pickupLead:45,    // minimum minutes before a pickup slot
  dineLead:30,
@@ -257,7 +258,7 @@ function setMode(m){
  $("[data-l=time]").textContent=dine?"Time *":"Take away time *";
  $("#ord-mh").textContent=dine?"Pre-order dishes (optional)":"Choose your dishes *";
  hidePay();root.classList.toggle("pay-on",payOn());
- $("[data-go]").textContent=dine?"Reserve on WhatsApp":(payOn()?"Continue to pay by UPI":"Send order on WhatsApp");
+ $("[data-go]").textContent=dine?"Reserve on WhatsApp":(CONFIG.checkout&&apiState===true?"Continue to checkout":(payOn()?"Continue to pay by UPI":"Send order on WhatsApp"));
  $(".ord-sub").textContent=dine?"Tell us when you are coming. We will confirm on WhatsApp.":(payOn()?"Order ahead, pay by UPI and collect from the restaurant. We confirm on WhatsApp after checking payment.":"Order ahead and collect from the restaurant. We will confirm on WhatsApp.");
  fillTimes();renderMenu();updateSum();hideErr();
 }
@@ -357,6 +358,7 @@ function hideErr(){var e=$(".ord-err");e.hidden=true}
 function submit(pay){
  var f=$(".ord-form"),v=function(n){return (f.elements[n].value||"").trim()};
  var name=v("name"),mob=v("mobile").replace(/[\s\-()]/g,"").replace(/^(\+?91|0)(?=\d{10}$)/,""),email=v("email"),date=v("date"),time=v("time");
+ if(S.mode==="pickup"&&!pay&&CONFIG.checkout&&apiState===true){var c0=cartTotal();if(!c0.n){showErr("Please choose at least one dish for take away.");$(".ord-menu").scrollIntoView({behavior:"smooth",block:"start"});return}checkoutOpen(c0);return}
  if(!name){showErr("Please enter your name.");f.elements.name.focus();return}
  if(!/^[6-9]\d{9}$/.test(mob)){showErr("Please enter a valid 10-digit mobile number.");f.elements.mobile.focus();return}
  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr("That email address does not look right.");f.elements.email.focus();return}
@@ -404,6 +406,16 @@ function submit(pay){
  hidePay(true);$(".ord-done").hidden=false;
 }
 
+/* ---------- online checkout (Cloudflare API). Falls back to the WhatsApp/UPI flow when the API is not open. ---------- */
+var apiState=null; // null unknown, true open, false closed
+function probeApi(){if(apiState!==null||!CONFIG.checkout||!window.fetch||location.protocol==="file:")return;
+ var done=false,t=setTimeout(function(){if(!done){done=true;apiState=false}},2500);
+ fetch("/api/health",{cache:"no-store"}).then(function(r){return r.json()}).then(function(j){if(done)return;done=true;clearTimeout(t);apiState=!!(j&&j.ok&&j.live);try{if(root&&!root.hidden)setMode(S.mode)}catch(e){}}).catch(function(){if(!done){done=true;clearTimeout(t);apiState=false}});}
+function checkoutOpen(c){
+ if(apiState!==true)return false;
+ var fm=$(".ord-form").elements;store("name",(fm.name.value||"").trim());store("mobile",(fm.mobile.value||"").replace(/\D/g,"").slice(-10));
+ location.href=CONFIG.checkout;return true;}
+
 /* ---------- UPI payment step (Take away) ---------- */
 function payOn(c){var u=CONFIG.upi;return !!(u&&u.id)&&(c?c.t>0:true)}
 function upiUrl(amt,scheme){
@@ -444,7 +456,7 @@ function copyUpi(btn){
 
 /* ---------- open / close ---------- */
 function open(mode,opts){
- if(!root)build();
+ if(!root)build();probeApi();
  lastFocus=document.activeElement;
  root.hidden=false;document.documentElement.classList.add("ord-open");$(".ord-done").hidden=true;$(".ord-box").style.transform="";hidePay();
  var f=$(".ord-form");if(!f.elements.date.value)f.elements.date.value=todayStr();
