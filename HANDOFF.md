@@ -75,3 +75,8 @@ Unzip over the v95 repo, `git add` the listed paths by name, push.
 - Tested here: seo-wa tests (4 pass), catalogue script on a stub menu. NOT run here: providers.test.mjs and the full API suite (they need the v95 files, not in this patch zip). Run `node --no-warnings --test tools/test/*.test.mjs` in the Codespace first.
 - NOT tested: real MSG91 SMS, real Reelo calls (production base URL is not in their docs), real PayU, catalogue script against the real menu.js (assumes item fields sku, name, cat, priceMinor, available, veg, servedAt), apply-seo against the real HTML.
 - Waiting on owner: MSG91 key + DLT template id, Reelo base URL / vendor id / merchant id / customer key, PayU key + salt, final domain (.com or .in), GBP link, real photos.
+
+
+## v97 phase 1 patch list (23 Oct 2026)
+New: db/migrations/002_tip_discount.sql, 003_redemptions.sql; functions/_lib/pricing.js, offers.js, redeem.js; functions/api/offers.js; tools/test/loyalty.test.mjs.
+Changed: functions/_lib/orders.js, functions/api/quote.js, functions/api/menu.js; checkout.html, checkout.js, checkout.css (cache v2); tools/test/d1shim.mjs (runs migrations), e2e.py (new flow + member points), tools/dev-server.mjs (SEED_MEMBER); STATUS.md, HANDOFF.md.

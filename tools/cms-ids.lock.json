@@ -1,0 +1,346 @@
+{
+ "dish.0": {
+  "num": 0,
+  "id": "swagramam-aritaku-bhojanam"
+ },
+ "dish.1": {
+  "num": 1,
+  "id": "munakkaada-vadiyalu-charu"
+ },
+ "dish.2": {
+  "num": 2,
+  "id": "carrot-beetroot-charu"
+ },
+ "dish.3": {
+  "num": 3,
+  "id": "kothimeera-kodi-charu"
+ },
+ "dish.4": {
+  "num": 4,
+  "id": "mutton-marag"
+ },
+ "dish.5": {
+  "num": 5,
+  "id": "karakaralade"
+ },
+ "dish.6": {
+  "num": 6,
+  "id": "gunpowder-venna"
+ },
+ "dish.7": {
+  "num": 7,
+  "id": "avakaya-muddapappu-arancini"
+ },
+ "dish.8": {
+  "num": 8,
+  "id": "britisher-la"
+ },
+ "dish.9": {
+  "num": 9,
+  "id": "gongura-chintachiguru-mushroom"
+ },
+ "dish.10": {
+  "num": 10,
+  "id": "swagramam-veg-lollipops"
+ },
+ "dish.11": {
+  "num": 11,
+  "id": "avakaya-corn-chuttalu"
+ },
+ "dish.12": {
+  "num": 12,
+  "id": "gongura-chintachiguru-paneer"
+ },
+ "dish.13": {
+  "num": 13,
+  "id": "gunpowder-venna-paneer"
+ },
+ "dish.14": {
+  "num": 14,
+  "id": "deyyaala-kodi-guddulu"
+ },
+ "dish.15": {
+  "num": 15,
+  "id": "chitti-rekkala-vepudu"
+ },
+ "dish.16": {
+  "num": 16,
+  "id": "gongura-kodi-rekkalu"
+ },
+ "dish.17": {
+  "num": 17,
+  "id": "masala-kodi-rekkalu"
+ },
+ "dish.18": {
+  "num": 18,
+  "id": "konaseema-kodi-vepudu"
+ },
+ "dish.19": {
+  "num": 19,
+  "id": "perugu-masala-kodi"
+ },
+ "dish.20": {
+  "num": 20,
+  "id": "creamy-kothimeera-kodi"
+ },
+ "dish.21": {
+  "num": 21,
+  "id": "avakaya-kodi-chuttalu"
+ },
+ "dish.22": {
+  "num": 22,
+  "id": "mastan-keema-mirchi-bajji"
+ },
+ "dish.23": {
+  "num": 23,
+  "id": "palleturi-chepa-vepudu"
+ },
+ "dish.24": {
+  "num": 24,
+  "id": "tamalapaku-chepa-vepudu"
+ },
+ "dish.25": {
+  "num": 25,
+  "id": "ooru-kodi-vepudu"
+ },
+ "dish.26": {
+  "num": 26,
+  "id": "gunpowder-venna-royyalu"
+ },
+ "dish.27": {
+  "num": 27,
+  "id": "royyala-boondi-mixture"
+ },
+ "dish.28": {
+  "num": 28,
+  "id": "charminar-tala-hua-gosht"
+ },
+ "dish.29": {
+  "num": 29,
+  "id": "swagramam-chitti-rekkalu-platter"
+ },
+ "dish.30": {
+  "num": 30,
+  "id": "gongura"
+ },
+ "dish.31": {
+  "num": 31,
+  "id": "khazana-veg-curry"
+ },
+ "dish.32": {
+  "num": 32,
+  "id": "mushroom-masala"
+ },
+ "dish.33": {
+  "num": 33,
+  "id": "dal-makhani"
+ },
+ "dish.34": {
+  "num": 34,
+  "id": "kaju-tomato-masala"
+ },
+ "dish.35": {
+  "num": 35,
+  "id": "paneer-masala-bhurji"
+ },
+ "dish.36": {
+  "num": 36,
+  "id": "palak-paneer"
+ },
+ "dish.37": {
+  "num": 37,
+  "id": "omelette"
+ },
+ "dish.38": {
+  "num": 38,
+  "id": "vellulli-guddu-porutu"
+ },
+ "dish.39": {
+  "num": 39,
+  "id": "swagramam-sp-omelette-kura"
+ },
+ "dish.40": {
+  "num": 40,
+  "id": "cheruvu-chepa-pulusu"
+ },
+ "dish.41": {
+  "num": 41,
+  "id": "kolavennu-kodi-vepudu"
+ },
+ "dish.42": {
+  "num": 42,
+  "id": "nagarjuna-chilli-chicken"
+ },
+ "dish.43": {
+  "num": 43,
+  "id": "chettinadu-kodi-kura"
+ },
+ "dish.44": {
+  "num": 44,
+  "id": "allam-kodi-kura"
+ },
+ "dish.45": {
+  "num": 45,
+  "id": "chitti-royyala-iguru"
+ },
+ "dish.46": {
+  "num": 46,
+  "id": "mamsam-keema-vepudu"
+ },
+ "dish.47": {
+  "num": 47,
+  "id": "veta-mamsam-kura"
+ },
+ "dish.48": {
+  "num": 48,
+  "id": "gongura-mamsam"
+ },
+ "dish.49": {
+  "num": 49,
+  "id": "mutton-dalcha"
+ },
+ "dish.50": {
+  "num": 50,
+  "id": "ankapur-natu-kodi-pulusu"
+ },
+ "dish.51": {
+  "num": 51,
+  "id": "swagramam-bommidayala-pulusu"
+ },
+ "dish.52": {
+  "num": 52,
+  "id": "mulbagal-ghee-dosa"
+ },
+ "dish.53": {
+  "num": 53,
+  "id": "phulka"
+ },
+ "dish.54": {
+  "num": 54,
+  "id": "appam"
+ },
+ "dish.55": {
+  "num": 55,
+  "id": "bun-nool-parotta"
+ },
+ "dish.56": {
+  "num": 56,
+  "id": "ragi-sankati"
+ },
+ "dish.57": {
+  "num": 57,
+  "id": "ghee-avakai-muddapappu-annam"
+ },
+ "dish.58": {
+  "num": 58,
+  "id": "khazana-veg-biryani"
+ },
+ "dish.59": {
+  "num": 59,
+  "id": "vellulli-kaaram-gutti-vankaya-pulao"
+ },
+ "dish.60": {
+  "num": 60,
+  "id": "puttagodugula-biryani"
+ },
+ "dish.61": {
+  "num": 61,
+  "id": "paneer-biryani"
+ },
+ "dish.62": {
+  "num": 62,
+  "id": "malai-paneer-biryani"
+ },
+ "dish.63": {
+  "num": 63,
+  "id": "thalapakatti-chicken-biryani"
+ },
+ "dish.64": {
+  "num": 64,
+  "id": "kodi-joint-pulao-kodi-joint-biryani"
+ },
+ "dish.65": {
+  "num": 65,
+  "id": "chennai-chicken-65-biryani"
+ },
+ "dish.66": {
+  "num": 66,
+  "id": "special-thalapakatti-chicken-biryani"
+ },
+ "dish.67": {
+  "num": 67,
+  "id": "chitti-royyala-pulao"
+ },
+ "dish.68": {
+  "num": 68,
+  "id": "ambur-mutton-biryani"
+ },
+ "dish.69": {
+  "num": 69,
+  "id": "mamsam-keema-pulao"
+ },
+ "dish.70": {
+  "num": 70,
+  "id": "perugu-annam"
+ },
+ "dish.71": {
+  "num": 71,
+  "id": "mushroom-masala-2"
+ },
+ "dish.72": {
+  "num": 72,
+  "id": "paneer-masala"
+ },
+ "dish.73": {
+  "num": 73,
+  "id": "swagramam-sp-omelette-kura-2"
+ },
+ "dish.74": {
+  "num": 74,
+  "id": "muddapappu-avakaya-annam-omelette"
+ },
+ "dish.75": {
+  "num": 75,
+  "id": "chettinadu-kodi-kura"
+ },
+ "dish.76": {
+  "num": 76,
+  "id": "ankapur-natukodi-pulusu"
+ },
+ "dish.77": {
+  "num": 77,
+  "id": "veta-mamsam-kura-2"
+ },
+ "dish.78": {
+  "num": 78,
+  "id": "patel-paya-bun-nool-parotta"
+ },
+ "dish.79": {
+  "num": 79,
+  "id": "tender-coconut-pudding"
+ },
+ "dish.80": {
+  "num": 80,
+  "id": "swagramam-mulberry-malai"
+ },
+ "dish.81": {
+  "num": 81,
+  "id": "malai-jamun-sizzler"
+ },
+ "dish.82": {
+  "num": 82,
+  "id": "water-bottle"
+ },
+ "dish.83": {
+  "num": 83,
+  "id": "soft-drink"
+ },
+ "dish.84": {
+  "num": 84,
+  "id": "goli-soda"
+ },
+ "dish.85": {
+  "num": 85,
+  "id": "butter-milk"
+ }
+}

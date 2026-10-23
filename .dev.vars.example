@@ -1,0 +1,28 @@
+# Copy to .dev.vars for local runs. NEVER commit real values. On Cloudflare set these under Settings > Variables and Secrets.
+# --- Phase 0 (infra) ---
+TOKEN_SECRET=
+ADMIN_KEY=
+ONLINE_ORDER_LIVE=off
+# --- Phase 3 (real OTP and PayU test) ---
+# OTP_PROVIDER=msg91
+# MSG91_AUTHKEY=
+# MSG91_TEMPLATE_ID=
+# PAYMENT_PROVIDER=payu
+# PAYU_ENV=test
+# PAYU_KEY=
+# PAYU_SALT=
+# --- Phase 2 (Reelo, after their answers) ---
+# LOYALTY_PROVIDER=reelo
+# REELO_BASE_URL=
+# REELO_VENDOR_ID=
+# REELO_MERCHANT_ID=
+# REELO_CUSTOMER_KEY=
+# REELO_CAPTURE=off
+# --- Offers without code changes (one line of JSON, see docs/CREDENTIALS_CHECKLIST.md) ---
+# OFFERS_JSON=
+# --- Phase 5 (go live) ---
+# ENV=production
+# ONLINE_ORDER_LIVE=on
+# PAYU_ENV=live
+# GST_CONFIRMED=true
+# COD_LIVE=on

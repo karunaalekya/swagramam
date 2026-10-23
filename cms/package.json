@@ -1,0 +1,8 @@
+{
+  "name": "swagramam-studio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": { "dev": "sanity dev", "build": "sanity build", "deploy": "sanity deploy" },
+  "dependencies": { "sanity": "^3", "react": "^18", "react-dom": "^18", "styled-components": "^6" }
+}

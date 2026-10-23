@@ -26,3 +26,41 @@ label.ck-f{display:block;font-weight:600;font-size:14px;margin:10px 0 4px}.ck-in
 .ck-ono{font:700 22px var(--bf);letter-spacing:.08em;color:var(--g);background:#fff;display:inline-block;border:2px dashed var(--go2);border-radius:12px;padding:6px 16px;margin:6px 0}
 .ck-ft{max-width:680px;margin:0 auto;padding:0 16px 30px;font-size:13px;color:#5b5a4c;text-align:center}.ck-ft a{color:var(--g)}
 @media(prefers-reduced-motion:reduce){.ck-ico.wait{animation:none}}
+/* ---- v97 phase 1+2: two-column checkout, tip, rewards, OTP boxes, offers dialog ---- */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ck.wide{max-width:1080px}.ck-grid{display:grid;gap:0 22px;grid-template-columns:1fr;align-items:start}.ck-col{min-width:0}
+@media(min-width:900px){.ck-grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}}
+:focus-visible{outline:3px solid var(--go2);outline-offset:2px}
+.ck-kv{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--ln)}.ck-kv:last-of-type{border-bottom:0}.ck-kv small{display:block;color:#5b5a4c;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.ck-kv b{display:block}.ck-addr{display:block;font-size:13px;color:#5b5a4c}
+.ck-btn.sm{min-height:44px;padding:0 16px;font-size:14px}.ck-two{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}@media(min-width:420px){.ck-two{grid-template-columns:1fr 1fr}}
+.ck-ln{grid-template-columns:1fr auto}.ck-act{grid-column:1/-1;display:flex;gap:16px;justify-content:flex-end}.ck-rm{min-height:44px;padding:0 4px}.ck-rm.del{color:#a12a1b}
+.ck-ln-n{grid-column:1/-1}.ck-ln.free b em{font-style:normal;font:700 11px var(--bf);background:var(--go);color:var(--ink);border-radius:999px;padding:2px 8px;margin-left:6px}
+.ck-more{display:inline-block;min-height:44px;line-height:44px;font-weight:700;color:var(--g)}
+.ck-tips{display:flex;flex-wrap:wrap;gap:8px}.ck-chip.tip .x{font-size:18px;line-height:1;margin-left:4px}
+.ck-offer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--ln)}.ck-offer.col{display:block}.ck-offer b{display:block}
+.ck-tag{display:inline-block;font-size:13px;color:#14502e;background:#e6f4ea;border-radius:999px;padding:2px 10px;margin-top:4px}
+.ck-chk.tight small{display:block;color:#5b5a4c}input[type=range]{width:100%;accent-color:var(--g);min-height:44px}
+.ck-i{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--g);background:#fff;color:var(--g);font:700 12px var(--bf);cursor:pointer;vertical-align:middle;margin-left:4px;padding:0}
+.ck-tipbox{grid-column:1/-1;font-size:13px;background:#f2f8f4;border-radius:10px;padding:8px 10px;color:#2d3b32}.ck-disc{color:#14502e}.ck-pts{font-size:14px;margin:10px 0}
+.ck-otp{display:flex;gap:8px;margin:6px 0}.ck-ob{width:100%;min-width:0;max-width:52px;height:56px;text-align:center;font:700 22px var(--bf);border:1.5px solid var(--ln);border-radius:12px;background:#fff;color:var(--ink);padding:0}.ck-ob:focus{outline:2px solid var(--go);border-color:var(--go2)}
+.ck-dlg{border:0;border-radius:20px;padding:18px;width:min(520px,calc(100vw - 24px));max-height:86vh;overflow:auto;background:#fff;color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.3)}.ck-dlg::backdrop{background:rgba(16,58,39,.55)}
+@media(max-width:600px){.ck-dlg{margin:auto auto 0;width:100%;max-width:none;border-radius:20px 20px 0 0;padding-bottom:calc(18px + env(safe-area-inset-bottom))}}
+.ck-dh{display:flex;justify-content:space-between;align-items:center}.ck-dh h2{font:400 22px var(--hf);margin:0;color:var(--dk)}.ck-x{width:44px;height:44px;border:0;background:none;font-size:30px;cursor:pointer;color:var(--g)}
+.ck-off{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1.5px solid var(--ln);border-radius:14px;padding:12px;margin:10px 0}.ck-off.off{opacity:.7}.ck-off p{margin:2px 0;font-size:14px}.ck-code{font:700 12px var(--bf);letter-spacing:.06em;border:1.5px dashed var(--go2);border-radius:6px;padding:1px 6px}.ck-save{color:#14502e;font-weight:700}.ck-why{color:#7b1d12}
+.ck-pay{margin-bottom:14px}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+/* ---- v97 weight pass: lighter hierarchy. 400 body, 500 labels, 600 names, buttons and totals, 700 only for the grand total ---- */
+b,strong{font-weight:600}
+.ck-kv b,.ck-offer b,.ck-ln>b,.ck-opt b,.ck-chk.tight b,.ck-ok b,.ck-pts b{font-weight:600}
+.ck-kv small,.ck-f,.ck-m{font-weight:500}
+.ck-btn,.ck-chip,.ck-rm,.ck-more,.ck-tag,.ck-code,.ck-i,.ck-ln.free b em{font-weight:600}
+.ck-ob{font-weight:600}.ck-ln .p,.ck-sum .r{font-weight:500}
+.ck-sum .t{font-weight:700}
+.ck-opt small,.ck-chk.tight small,.ck-note,.ck-addr{font-weight:400}
+
+/* tip chips and summary as in the Biryanis reference: selected chip is dark with a cross, points row is green */
+.ck-chip.tip{min-width:76px;justify-content:center;border-radius:8px;border:1.5px solid var(--ink);color:var(--ink)}
+.ck-chip.tip[aria-pressed=true]{background:var(--dk);border-color:var(--dk);color:#fff}
+.ck-chip.tip:last-child{border-color:var(--go2);color:#a8741a}.ck-chip.tip:last-child[aria-pressed=true]{background:var(--dk);color:#fff}
+.ck-tipamt{margin:10px 0 0}.ck-green{color:#14502e}
+.ck-tips .ck-chip.tip{flex:1 1 0;min-width:0;padding:0 6px}

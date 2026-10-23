@@ -1,7 +1,9 @@
 // Local test server: serves the site and runs functions/api/* on an in-memory database. Run: node --no-warnings tools/dev-server.mjs [port]
 import http from "node:http"; import fs from "node:fs"; import path from "node:path"; import { makeEnv } from "./test/d1shim.mjs";
 const root = path.resolve(new URL("..", import.meta.url).pathname), port = +process.argv[2] || 8787;
-const env = makeEnv({ TEST_NOW_MS: process.env.TEST_NOW_MS || "" }); if (!process.env.TEST_NOW_MS) delete env.TEST_NOW_MS;
+const env = makeEnv({ TEST_NOW_MS: process.env.TEST_NOW_MS || "" }); if (!process.env.TEST_NOW_MS) delete env.TEST_NOW_MS; if (process.env.ADMIN_KEY) env.ADMIN_KEY = process.env.ADMIN_KEY;
+// Demo member for browser tests: SEED_MEMBER=9876500022:1000 (phone:points)
+if (process.env.SEED_MEMBER) { const [ph, pt] = process.env.SEED_MEMBER.split(":"); env.raw.prepare("INSERT OR REPLACE INTO customers(phone,name,member,points,created_at,updated_at) VALUES(?,?,1,?,0,0)").run(ph, "Demo Member", +pt || 0); }
 const routes = new Map();
 async function load(p) { if (!routes.has(p)) routes.set(p, await import(path.join(root, "functions", p + ".js"))); return routes.get(p); }
 const T = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".webp": "image/webp", ".png": "image/png", ".woff2": "font/woff2", ".ico": "image/x-icon", ".mp4": "video/mp4", ".mp3": "audio/mpeg", ".json": "application/json", ".webmanifest": "application/json", ".svg": "image/svg+xml", ".txt": "text/plain" };

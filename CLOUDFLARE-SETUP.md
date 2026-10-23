@@ -52,3 +52,6 @@ Add secrets under Settings > Variables and Secrets. Then open `/api/admin/selfch
 | Production | `ENV=production` and `ONLINE_ORDER_LIVE=true` (production is closed until both are set) |
 
 **Safety rules built in:** `ENV=production` refuses mock payment and mock SMS. A wrong or missing MSG91 key blocks ordering (health shows not live). A wrong Reelo setting never blocks ordering: checkout does not call Reelo; points are sent after the order completes.
+
+## Payment rule (server-enforced)
+Total up to Rs 1000.00 (including GST and tip): Pay online (PayU) and Pay at pickup both offered. Above Rs 1000.00: Pay online only. Limit = `COD_MAX_TOTAL_MINOR` (default 100000). On the real site (`ENV=production`) Pay at pickup is OFF until you set `COD_LIVE=on`.

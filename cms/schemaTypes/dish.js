@@ -1,0 +1,35 @@
+import { defineType, defineField, defineArrayMember } from "sanity";
+// Dish. Price rules mirror what the build and the server enforce, so a bad value is caught here first.
+export default defineType({
+  name: "dish", title: "Dish", type: "document",
+  fields: [
+    defineField({ name: "name", title: "Name", type: "string", validation: R => R.required().min(2).max(60) }),
+    defineField({ name: "dinnerName", title: "Dinner name (only if different)", type: "string", validation: R => R.max(60) }),
+    defineField({ name: "subtitle", title: "Small line under the name (e.g. 8 pcs)", type: "string", validation: R => R.max(50) }),
+    defineField({ name: "subtitleDinner", title: "Small line at dinner (only if different)", type: "string", validation: R => R.max(50) }),
+    defineField({ name: "category", title: "Category", type: "reference", to: [{ type: "category" }], validation: R => R.required() }),
+    defineField({ name: "diet", title: "Veg / non-veg", type: "string", options: { layout: "radio", list: [{ title: "Veg", value: "v" }, { title: "Non-veg", value: "n" }, { title: "Egg", value: "e" }] }, validation: R => R.required() }),
+    defineField({ name: "meal", title: "Served at", type: "string", options: { layout: "radio", list: [{ title: "Lunch only", value: "l" }, { title: "Dinner only", value: "d" }, { title: "Lunch and dinner", value: "ld" }] }, validation: R => R.required() }),
+    defineField({ name: "price", title: "Price (Rs, whole rupees)", type: "number", description: "Use this for one price. For small / large or other sizes, leave empty and fill Size options.",
+      hidden: ({ parent }) => parent?.options?.length > 0,
+      validation: R => R.custom((v, ctx) => (ctx.parent?.options?.length ? true : (Number.isInteger(v) && v > 0) || "Enter a price above 0 in whole rupees")) }),
+    defineField({ name: "options", title: "Size options (use instead of a single price)", type: "array",
+      of: [defineArrayMember({ type: "object", name: "sizeOption", fields: [
+        defineField({ name: "label", title: "Label (Small, Large, Mushroom ...)", type: "string", validation: R => R.required().max(30) }),
+        defineField({ name: "price", title: "Price (Rs)", type: "number", validation: R => R.required().integer().positive() }),
+        defineField({ name: "key", title: "Code (never change)", type: "string", readOnly: ({ value }) => !!value, validation: R => R.required().regex(/^[a-z0-9-]+$/) }) ],
+        preview: { select: { title: "label", subtitle: "price" } } })],
+      validation: R => R.custom(v => !v || v.length === 0 || v.length >= 2 || "Size options need at least 2 entries") }),
+    defineField({ name: "tag", title: "Highlight", type: "string", options: { list: [{ title: "Swagramam special", value: "s" }, { title: "Tag d (existing, keep as is)", value: "d" }] } }),
+    defineField({ name: "soldOut", title: "Sold out today", type: "boolean", initialValue: false }),
+    defineField({ name: "hidden", title: "Hide from the website", type: "boolean", initialValue: false }),
+    defineField({ name: "order", title: "Position in the list", type: "number" }),
+    defineField({ name: "dishId", title: "Code (set once, never change)", type: "string", description: "Lower-case letters, numbers and dashes, e.g. kodi-pulao. Orders and Reelo use this, so it must never change, even if the name does.",
+      readOnly: ({ document }) => !!document?.num, validation: R => R.required().regex(/^[a-z0-9][a-z0-9-]*$/, { name: "code" }) }),
+    defineField({ name: "photoKey", title: "Photo code (existing photo)", type: "string", description: "Photos are connected in build step 4. Leave as is." }),
+    defineField({ name: "num", title: "Number (assigned by the build)", type: "number", readOnly: true, hidden: true }),
+  ],
+  orderings: [{ title: "Position", name: "pos", by: [{ field: "order", direction: "asc" }] }],
+  preview: { select: { title: "name", subtitle: "diet", price: "price", hidden: "hidden", sold: "soldOut" },
+    prepare: ({ title, price, hidden, sold }) => ({ title, subtitle: (price ? "Rs " + price : "sizes") + (sold ? " | SOLD OUT" : "") + (hidden ? " | HIDDEN" : "") }) },
+});

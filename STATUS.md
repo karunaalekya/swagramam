@@ -39,3 +39,30 @@ MSG91 key + DLT template id, Reelo base URL / vendor id / merchant id / customer
 
 ## Resume prompt
 "Continue Swagramam from STATUS.md, HANDOFF.md and docs/Swagramam_Ordering_Master_Plan.md. Next: Session 2 (Order Board, counter flow, alerts, loyalty pages)."
+
+
+## v97 plan update (22 Oct 2026)
+FINAL phase-wise plan: docs/Swagramam_Ordering_Plan_v2_FINAL.md (replaces the 3-session path). Verified baseline: backend code exists on mock; tip, coupon, freebies, points redemption, guest/sign-in screen, Order Board NOT built; Cloudflare D1/KV never set up.
+Resume prompt: "Continue Swagramam. Read STATUS.md and docs/Swagramam_Ordering_Plan_v2_FINAL.md. Phase 0 is done in the client Cloudflare account (health outputs pasted). Do Phase 1 only (checkout rebuild, tip, discount fields). Deliver a zip after each task."
+
+
+## v97 Phase 1 + Phase 2 (mock) built, 23 Oct 2026
+Delivered in swagramam-v97-phase1.zip. Phase 0 (real Cloudflare D1/KV) still needs the owner; nothing here has touched real Cloudflare.
+**Built:** checkout rebuilt to the Biryanis pattern (pickup banner + Change, sign in/guest, 6-box OTP with 30 s resend, cart with +/-, notes, delete, tip 5/10/15/Other with 5% preselected and removable, coupon and freebie panels, points slider, payment summary with GST tooltip). Server: `functions/_lib/pricing.js` (one money path: discount -> GST on taxable -> tip untaxed -> total), `offers.js` (mock coupons SWAG10, FLAT50, BIGEAT25, CLUB15, free dessert, points 1 pt = Rs 0.05, min 200, step 20, max 50% of bill), `redeem.js` (reserve -> commit on payment or pay-at-pickup -> release on failure or 30 min expiry), `api/offers.js`. Quote and checkout/start accept `tip` and `redeem`; browser never sends amounts. Pay-at-pickup limit uses total including tip. PayU amount includes tip.
+**Migrations (owner runs after schema.sql, in order):** `db/migrations/002_tip_discount.sql` (run once), `003_redemptions.sql`.
+**Tests:** 48 unit tests pass (`node --no-warnings --test tools/test/*.test.mjs`), 55 browser checks pass at 390 and 1280 (`SEED_MEMBER=9876500022:1000 node --no-warnings tools/dev-server.mjs 8787`, then `python3 tools/test/e2e.py`).
+**NOT tested:** real Cloudflare D1 (migration 002 ALTER TABLE on real D1), real Reelo (provider has no coupon list/reserve/release; with LOYALTY_PROVIDER=reelo the panels say "redeemed at the restaurant"), real PayU/MSG91, real phone, Safari, Firefox. Mock offer rules and point value are placeholders until Reelo answers (plan Phase 2 questions). Reelo bill capture (`reelo.js`) still sends discount 0 and net = total incl. tip; fix when Reelo confirms the format. GST 5% still assumed (D3).
+**Next:** Phase 0 by owner, then Phase 3 (real OTP, PayU test) or Phase 2 Reelo adapter after answers.
+
+v97 final check (23 Oct 2026): font-weight pass in checkout.css (cache v3), payment-rule test added (49 unit tests, 55 browser checks pass). Production needs COD_LIVE=on for pay at pickup.
+
+## v97 Phase 2 (mock side complete), 23 Oct 2026
+Added: coupon expiry (mock DIWALI20 expired, for tests), Reelo bill now sends discount and leaves the tip out of net (UNCONFIRMED, Reelo question 6), tests for expired coupon, simultaneous double submit, replayed token, webhook replay, discount clamps, and full payment fail/success paths (55 unit tests). Email text and answers tracker: docs/Phase2_Reelo_Email_and_Open_Answers.md.
+BLOCKED on Reelo (owner): real offers, reserve/release, sandbox test. Placeholder offer rules stay until then.
+
+23 Oct 2026 final: tip card and summary restyled to the Biryanis screenshots (tip amount and GST amount shown). Pending list: docs/PENDING_STATUS.md. 55 unit tests, 57 browser checks pass.
+
+23 Oct 2026 credential-ready pass: OFFERS_JSON, readiness report, tools/preflight.mjs, CREDENTIALS_CHECKLIST, .dev.vars.example, security headers. 57 unit tests pass.
+
+## v97 + CMS steps 1a, 1b, 2 merged (23 Oct 2026)
+Merged into this package: `cms/` (Sanity Studio), `tools/cms-*.mjs`, `docs/CMS_SETUP.md`. 1a dishes and categories, 1b contact/address/map/hours, 2 home page "What's new" announcements. 82 unit tests pass (`node --no-warnings --test tools/test/*.test.mjs`). With today's content every generated file equals the current file byte for byte. NOT run against a real Sanity project or Cloudflare. Next: sold-out badge, photos, reviews/signature/rewards fields. Setup: docs/CMS_SETUP.md.

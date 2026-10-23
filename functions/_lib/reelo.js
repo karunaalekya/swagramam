@@ -61,7 +61,8 @@ export function reelo(env) {
       return { ...ids(), customer: { mobile: mob91(o.phone), name: (cust && cust.name) || o.name || "", email: (cust && cust.email) || o.email || "" },
         transaction: { id: o.id, number: o.id, type: "take_away", payment_type: o.pay_method === "payu" ? "Online" : "Cash", order_from: "own_website",
           order_time: istStamp(o.slot_date && o.slot_time ? Date.parse(o.slot_date + "T" + o.slot_time + ":00+05:30") : o.created_at),
-          gross_amount: rs(o.subtotal_minor), net_amount: rs(o.total_minor), amount: rs(o.total_minor), discount: 0, charges: [], taxes: gst,
+          gross_amount: rs(o.subtotal_minor), net_amount: rs(o.total_minor - (o.tip_minor || 0)), amount: rs(o.total_minor - (o.tip_minor || 0)), discount: rs(o.discount_minor || 0),   // tip is staff money, not sale revenue; UNCONFIRMED with Reelo (open question 6)
+          charges: [], taxes: gst,
           items: it.map(x => { const m = BY_SKU.get(x.sku); return { id: x.sku, name: x.name, rate: rs(x.unit_minor), quantity: x.qty, subtotal: rs(x.line_minor), category: m ? CATS[m.cat] || "" : "", addon: [] }; }) } };
     },
     // earn: send the bill once. Skipped unless REELO_CAPTURE=on. "Transaction already exists" counts as done (idempotent on transaction.id).

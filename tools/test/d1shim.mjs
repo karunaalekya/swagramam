@@ -2,6 +2,8 @@
 import { DatabaseSync } from "node:sqlite"; import fs from "node:fs";
 export function makeEnv(extra = {}) {
   const db = new DatabaseSync(":memory:"); db.exec(fs.readFileSync(new URL("../../db/schema.sql", import.meta.url), "utf8"));
+  const mdir = new URL("../../db/migrations/", import.meta.url);   // same order the owner runs: schema, then 002, 003...
+  for (const f of fs.readdirSync(mdir).filter(x => /^\d+.*\.sql$/.test(x)).sort()) db.exec(fs.readFileSync(new URL(f, mdir), "utf8"));
   const stmt = (sql, args = []) => ({ bind: (...a) => stmt(sql, a),
     async run() { const r = db.prepare(sql).run(...args); return { success: true, meta: { changes: Number(r.changes) } }; },
     async first() { return db.prepare(sql).get(...args) || null; },
