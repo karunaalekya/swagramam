@@ -3237,3 +3237,19 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
 @media(max-width:520px){#rewards .sxr-hd h1{max-width:none}}
 
 @media(min-width:1400px) and (max-width:1539px){header#hd .nbw small{display:none}header#hd .nbw{top:14px}}
+
+/* ===== v98 mobile: one right-hand column (WhatsApp, Instagram, Sound); keep copy clear ===== */
+@media(max-width:600px){
+  body{--fb:calc(16px + env(safe-area-inset-bottom,0px))}
+  body:has(#ckb:not([hidden])){--fb:calc(96px + env(safe-area-inset-bottom,0px))}
+  .fab{right:12px!important;bottom:var(--fb)!important;gap:10px!important}
+  .fab .fw{width:52px!important;height:52px!important}
+  .fab .fw svg{width:28px!important;height:28px!important}
+  .fab .fi{width:42px!important;height:42px!important}
+  .fab .fi svg{width:22px!important;height:22px!important}
+  #mu{left:auto!important;right:12px!important;bottom:calc(var(--fb) + 114px)!important;width:42px;height:42px;padding:0!important;border-radius:50%!important;justify-content:center;font-size:0!important;gap:0!important}
+  body:has(#sx:not(.out)) .fab .fi{display:none!important}
+  body:has(#sx:not(.out)) .fab .fw{width:46px!important;height:46px!important}
+  body[data-pg="home"] #hx{padding-right:68px!important}
+  body[data-pg="home"] #hx .hh{font-size:clamp(28px,8.8vw,38px)!important}
+}
