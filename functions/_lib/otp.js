@@ -3,7 +3,7 @@ import { hmac, safeEq, rid, b64u, unb64u, nowMs } from "./util.js";
 import { msg91Send } from "./msg91.js";
 const secret = env => env.TOKEN_SECRET || (env.ENV === "production" ? null : "dev-only-secret");
 const code6 = () => String(crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).padStart(6, "0");
-const TTL = 300000, RESEND = 30000, MAX_TRIES = 5, PER_PHONE_HR = 5, PER_IP_HR = 15, TOKEN_TTL = 30 * 60000;
+const TTL = 300000, RESEND = 30000, MAX_TRIES = 3, PER_PHONE_HR = 3, PER_IP_HR = 15, TOKEN_TTL = 30 * 60000;
 async function kget(env, k) { const v = await env.KV.get(k); return v ? JSON.parse(v) : null; }
 const kput = (env, k, o, ttl) => env.KV.put(k, JSON.stringify(o), { expirationTtl: Math.max(60, ttl) });
 // purpose: "checkout" | "lookup" | "join"
@@ -25,8 +25,8 @@ export async function sendOtp(env, phone, ip) {
   }
   return { ok: true, devCode: code, mock: true };   // devCode only exists on mock, never in production (blocked above)
 }
-export async function signToken(env, phone, purpose) {
-  const p = b64u(JSON.stringify({ p: phone, u: purpose, e: nowMs(env) + TOKEN_TTL, n: rid(12) }));
+export async function signToken(env, phone, purpose, ttl = TOKEN_TTL) {
+  const p = b64u(JSON.stringify({ p: phone, u: purpose, e: nowMs(env) + ttl, n: rid(12) }));
   return p + "." + (await hmac(secret(env), p));
 }
 export async function readToken(env, tok, purpose) {

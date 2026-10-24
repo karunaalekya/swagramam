@@ -47,24 +47,14 @@ var qTimer; function requoteSoon() { clearTimeout(qTimer); qTimer = setTimeout(f
 
 /* ---------- slots ---------- */
 function loadSlots(date, cb) { S.date = date; S.time = null; S.slots = []; api("/api/slots?date=" + date).then(function (j) { S.slots = j.ok ? j.slots : []; if (j.ok) { S.today = j.today; S.days = j.days; } cb && cb(); }); }
-function dateList() { var out = [], p = S.today.split("-"), b = Date.UTC(+p[0], +p[1] - 1, +p[2]); for (var i = 0; i < S.days; i++) { var d = new Date(b + i * 86400000); out.push(d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0") + "-" + String(d.getUTCDate()).padStart(2, "0")); } return out; }
+function dateList() { var out = [], p = S.today.split("-"), b = Date.UTC(+p[0], +p[1] - 1, +p[2]); for (var i = 0; i < 1; i++) {   /* takeaway: today only */ var d = new Date(b + i * 86400000); out.push(d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0") + "-" + String(d.getUTCDate()).padStart(2, "0")); } return out; }
 
 /* ---------- view pieces ---------- */
 function secInfo() {
-  var h = '<section class="ck-c" aria-labelledby="h-info"><h2 id="h-info">Pickup details</h2>';
-  var when = S.date && S.time ? (S.date === S.today ? "Today, " : "") + dayName(S.date) + " &middot; " + t12(S.time) : "Choose a pickup time";
-  h += '<div class="ck-kv"><div><small>Ordering for</small><b id="ck-when">' + when + '</b></div><button type="button" class="ck-btn sm" data-act="chg" aria-expanded="' + (S.picker || !S.time) + '">Change</button></div>';
+  var h = '<div class="ck-pk"><h2 id="h-info"><svg class="ck-pin" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Pickup details<span class="ck-pill">Today only</span></h2>';
   h += '<div class="ck-kv"><div><small>Pickup from</small><b>Swagramam, Labbipet</b><span class="ck-addr">Mogalrajapuram, Sidhartha Nagar, Vijayawada 520010</span></div></div>';
-  if (S.picker || !S.time) {
-    h += '<div class="ck-days" role="group" aria-label="Pickup date">';
-    dateList().forEach(function (d) { h += '<button type="button" class="ck-chip" data-date="' + d + '" aria-pressed="' + (d === S.date) + '">' + (d === S.today ? "Today" : dayName(d)) + "</button>"; });
-    h += '</div><div class="ck-times" role="group" aria-label="Pickup time">';
-    if (!S.slots.length) h += '<p class="ck-note">No pickup times left on this day. Please choose another day.</p>';
-    ["l", "d"].forEach(function (m) { var xs = S.slots.filter(function (s) { return s.meal === m; }); if (!xs.length) return; h += '<span class="ck-m">' + (m === "l" ? "Lunch" : "Dinner") + "</span>"; xs.forEach(function (s) { h += '<button type="button" class="ck-chip" data-time="' + s.time + '"' + (s.full ? " disabled" : "") + ' aria-pressed="' + (s.time === S.time) + '">' + t12(s.time) + "</button>"; }); });
-    h += '</div><p class="ck-note">Lunch 12:00 to 4:30 pm (Mon till 4:00 pm). Dinner 7:00 to 11:30 pm. Thali is lunch only. Combos are dinner only. Ready about 25 minutes after you order.</p>';
-  }
   var q = S.q; if (q && q.ok && q.conflicts.length) q.conflicts.forEach(function (c) { h += '<p class="ck-bad" role="alert">' + esc(c.reason) + ' <button type="button" class="ck-rm" data-rm="' + esc(c.sku) + '">Remove it</button></p>'; });
-  return h + "</section>";
+  return h + "</div>";
 }
 function consents() {
   var club = S.mode === "join" || (S.ver && S.ver.member);
@@ -72,17 +62,19 @@ function consents() {
     '<label class="ck-chk"><input type="checkbox" id="ck-mkt"' + (S.mkt ? " checked" : "") + '><span>Send me order alerts and offers by SMS or WhatsApp. (Optional)</span></label>';
 }
 function secIdentity() {
-  var h = '<section class="ck-c" aria-labelledby="h-id">';
+  var h = '<div class="ck-id">';
   if (S.token) {
     h += '<h2 id="h-id">Your details</h2><p class="ck-ok">Mobile verified: <b>+91 ' + esc(S.phone) + '</b> <button type="button" class="ck-rm" data-act="change">Change</button></p>';
-    h += '<label class="ck-f" for="ck-nm">Name</label><input class="ck-in" id="ck-nm" autocomplete="name" maxlength="60" value="' + esc(S.name) + '"><label class="ck-f" for="ck-em">Email (optional)</label><input class="ck-in" id="ck-em" type="email" autocomplete="email" maxlength="120" value="' + esc(S.email) + '">' + consents();
+    h += rwSwipe("open");
+    h += '<label class="ck-f" for="ck-nm">Name (needed for your order)</label><input class="ck-in" id="ck-nm" autocomplete="name" maxlength="60" value="' + esc(S.name) + '"><label class="ck-f" for="ck-em">Email (optional)</label><input class="ck-in" id="ck-em" type="email" autocomplete="email" maxlength="120" value="' + esc(S.email) + '">' + consents();
   } else if (!S.mode) {
-    h += '<h2 id="h-id">Sign in to enjoy rewards, or continue as guest</h2><p class="ck-note">Village Club members earn points on every order and can use coupons and free dishes.</p>';
+    h += '<h2 id="h-id">Sign in to unlock rewards, or continue as guest</h2><p class="ck-note">Village Club members earn points on every order and can use coupons and free dishes.</p>' + rwSwipe("locked");
     h += '<div class="ck-two"><button type="button" class="ck-btn p" data-mode="join">Sign in / Join</button><button type="button" class="ck-btn" data-mode="guest">Continue as guest</button></div>';
   } else {
     h += '<h2 id="h-id">' + (S.mode === "join" ? "Sign in or join Village Club" : "Continue as guest") + '</h2><button type="button" class="ck-rm" data-mode="">&larr; Back</button>';
-    h += '<label class="ck-f" for="ck-nm">Name</label><input class="ck-in" id="ck-nm" autocomplete="name" maxlength="60" value="' + esc(S.name) + '">';
+    if (S.mode === "join") h += rwSwipe(S.otpSent ? (S.vbusy ? "verifying" : "otp") : "locked");
     h += '<label class="ck-f" for="ck-ph">Mobile number</label><div class="ck-row"><input class="ck-in" id="ck-ph" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="14" placeholder="10-digit mobile" value="' + esc(S.phone) + '"' + (S.otpSent ? " readonly" : "") + '>' + (S.otpSent ? '<button type="button" class="ck-btn" data-act="editphone">Edit</button>' : "") + "</div>";
+    h += '<label class="ck-f" for="ck-nm">Name (optional)</label><input class="ck-in" id="ck-nm" autocomplete="name" maxlength="60" value="' + esc(S.name) + '">';
     h += '<label class="ck-f" for="ck-em">Email (optional)</label><input class="ck-in" id="ck-em" type="email" autocomplete="email" maxlength="120" value="' + esc(S.email) + '">' + consents();
     if (!S.otpSent) h += '<div id="ck-formerr" role="alert">' + (S.formErr ? '<p class="ck-bad">' + esc(S.formErr) + "</p>" : "") + '</div><button type="button" class="ck-btn p w" data-act="next">Next</button>';
     else {
@@ -92,11 +84,12 @@ function secIdentity() {
       h += '<div class="ck-two"><button type="button" class="ck-btn" id="ck-rs" data-act="resend"></button><button type="button" class="ck-btn p" data-act="verify">Continue to payment</button></div>';
     }
   }
-  return h + "</section>";
+  return h + "</div>";
 }
+function secStart() { return '<section class="ck-c" id="s-pickup" aria-labelledby="h-info">' + secInfo() + secIdentity() + "</section>"; }
 function secCart() {
   var q = S.q, ok = q && q.ok, rows = ok ? q.lines : lines().map(function (l) { var it = S.bySku[l.sku]; return { sku: l.sku, name: it.name, qty: l.qty, lineMinor: it.priceMinor * l.qty }; });
-  var h = '<section class="ck-c" aria-labelledby="h-cart"><h2 id="h-cart">Your order</h2>';
+  var h = '<div class="ck-ord"><h2 id="h-cart">Your order</h2>';
   rows.forEach(function (l) {
     var n = esc(l.name), sk = esc(l.sku), open = S.noteOpen[l.sku] || S.notes[l.sku];
     h += '<div class="ck-ln"><b>' + n + '</b><span class="p">' + rs(l.lineMinor) + '</span><span class="ck-q"><button type="button" data-d="-1" data-sku="' + sk + '" aria-label="One less ' + n + '">&minus;</button><output aria-live="polite">' + l.qty + '</output><button type="button" data-d="1" data-sku="' + sk + '" aria-label="One more ' + n + '">+</button></span>';
@@ -106,21 +99,22 @@ function secCart() {
   });
   if (ok && q.freebie) h += '<div class="ck-ln free"><b>' + esc(q.freebie.name) + ' <em>FREE</em></b><span class="p">Rs 0</span><span class="ck-act"><button type="button" class="ck-rm" data-rmoffer="freebie">Remove</button></span></div>';
   h += '<a class="ck-more" href="menu.html#menu">+ Add more items</a>';
-  h += '<label class="ck-f" for="ck-note">Order instructions (optional)</label><textarea class="ck-in" id="ck-note" maxlength="200" placeholder="Anything the kitchen should know">' + esc(S.note) + "</textarea></section>";
+  h += '<label class="ck-f" for="ck-note">Order instructions (optional)</label><textarea class="ck-in" id="ck-note" maxlength="200" placeholder="Anything the kitchen should know">' + esc(S.note) + "</textarea></div>";
   return h;
 }
 function secTip() {
   var q = S.q, ok = q && q.ok, opts = ok ? q.tipOptions : [{ pct: 5 }, { pct: 10 }, { pct: 15 }];
-  var h = '<section class="ck-c" aria-labelledby="h-tip"><h2 id="h-tip">Tip our team directly</h2><p class="ck-note">This order comes straight to us, and so does your tip. 100% of it goes to our hardworking staff. Thanks for your support!</p><div class="ck-tips" role="group" aria-label="Tip amount">';
+  var h = '<div class="ck-tip"><h2 id="h-tip">Tip our team directly</h2><p class="ck-note">This order comes straight to us, and so does your tip. 100% of it goes to our hardworking staff. Thanks for your support!</p><div class="ck-tips" role="group" aria-label="Tip amount">';
   opts.forEach(function (o) { var on = !S.tipOther && S.tip && S.tip.pct === o.pct; h += '<button type="button" class="ck-chip tip" data-tip="' + o.pct + '" aria-pressed="' + on + '"' + (on ? ' aria-label="' + o.pct + ' percent tip selected. Tap to remove"' : "") + ">" + o.pct + "%" + (on ? ' <span class="x" aria-hidden="true">&times;</span>' : "") + "</button>"; });
   h += '<button type="button" class="ck-chip tip" data-tip="other" aria-pressed="' + S.tipOther + '">Other' + (S.tipOther ? ' <span class="x" aria-hidden="true">&times;</span>' : "") + "</button></div>";
   if (S.tipOther) h += '<label class="ck-f" for="ck-tipamt">Tip amount in rupees' + (ok ? " (up to " + rs(q.tipMax.minor) + ")" : "") + '</label><input class="ck-in" id="ck-tipamt" type="text" inputmode="decimal" maxlength="7" placeholder="For example 30" value="' + esc(S.tipAmt) + '">';
   if (ok && q.tipMinor) h += '<p class="ck-note ck-tipamt" aria-live="polite">Your tip: <b>' + rs(q.tipMinor) + "</b>" + (S.tipOther || !S.tip ? "" : " (" + S.tip.pct + "% of the item total)") + "</p>";
   if (S.tipMsg) h += '<p class="ck-bad" role="alert">' + esc(S.tipMsg) + "</p>";
-  return h + "</section>";
+  return h + "</div>";
 }
+function secOrder() { return '<section class="ck-c" id="s-order" aria-labelledby="h-cart">' + secCart() + secTip() + "</section>"; }
 function secRedeem() {
-  var q = S.q, ok = q && q.ok, rd = ok && q.redeem, pi = ok && q.pointsInfo, h = '<section class="ck-c" aria-labelledby="h-rw"><h2 id="h-rw">Redeem rewards and promos</h2>';
+  var q = S.q, ok = q && q.ok, rd = ok && q.redeem, pi = ok && q.pointsInfo, h = '<section class="ck-c" id="s-offers" aria-labelledby="h-rw"><h2 id="h-rw">Redeem rewards and promos</h2>';
   if (!S.token) h += '<p class="ck-note">Verify your mobile number to use coupons, free dishes and points.</p>';
   h += '<div class="ck-offer"><div><b>Apply coupon</b>' + (rd && rd.coupon ? '<span class="ck-tag">' + esc(rd.coupon.code) + " applied &middot; you save " + rs(rd.coupon.discountMinor) + "</span>" : "") + "</div>" + (rd && rd.coupon ? '<button type="button" class="ck-rm" data-rmoffer="coupon">Remove</button>' : '<button type="button" class="ck-btn sm" data-dlg="coupon">Apply</button>') + "</div>";
   h += '<div class="ck-offer"><div><b>Redeem freebies</b>' + (ok && q.freebie ? '<span class="ck-tag">' + esc(q.freebie.title) + " added</span>" : "") + "</div>" + (ok && q.freebie ? '<button type="button" class="ck-rm" data-rmoffer="freebie">Remove</button>' : '<button type="button" class="ck-btn sm" data-dlg="freebie">Choose</button>') + "</div>";
@@ -133,8 +127,22 @@ function secRedeem() {
   if (S.offerMsg) h += '<p class="ck-bad" role="alert">' + esc(S.offerMsg) + "</p>";
   return h + '<p class="ck-note">One offer per order. <a href="rewards.html">How rewards work</a></p></section>';
 }
+function secTime() {
+  var open = S.picker, free = S.slots.filter(function (x) { return !x.full; }), meal = S.tabMeal || (S.time && (S.slots.filter(function (x) { return x.time === S.time; })[0] || {}).meal) || (free[0] && free[0].meal) || "l";
+  var h = '<div class="ck-tm"><div class="ck-kv"><div><small>Pickup today</small><b id="ck-when">' + (S.time ? t12(S.time) + " &middot; ready in about 25 min" : "Choose a pickup time") + '</b></div><button type="button" class="ck-btn sm" data-act="chg" aria-expanded="' + open + '">' + (open ? "Done" : "Change") + "</button></div>";
+  if (!S.slots.length) h += '<p class="ck-note">No pickup times left today. Please order on WhatsApp or come back tomorrow.</p>';
+  if (open && S.slots.length) {
+    var ms = ["l", "d"].filter(function (m) { return S.slots.some(function (x) { return x.meal === m; }); });
+    if (ms.length > 1) { h += '<div class="ck-tabs" role="tablist">'; ms.forEach(function (m) { h += '<button type="button" role="tab" class="ck-tab" data-meal="' + m + '" aria-selected="' + (m === meal) + '">' + (m === "l" ? "Lunch" : "Dinner") + "</button>"; }); h += "</div>"; }
+    h += '<div class="ck-times ck-scroll" role="group" aria-label="Pickup time today">';
+    S.slots.filter(function (x) { return x.meal === meal; }).forEach(function (x) { h += '<button type="button" class="ck-chip" data-time="' + x.time + '"' + (x.full ? " disabled" : "") + ' aria-pressed="' + (x.time === S.time) + '">' + t12(x.time) + "</button>"; });
+    h += "</div>";
+  }
+  return h + "</div>";
+}
 function secSummary() {
-  var q = S.q, ok = q && q.ok, h = '<section class="ck-c" aria-labelledby="h-pay"><h2 id="h-pay">Payment summary</h2>';
+  var q = S.q, ok = q && q.ok, h = '<section class="ck-c" id="s-pay" aria-labelledby="h-pay"><h2 id="h-pay">Payment summary</h2>';
+  h += secTime();
   if (ok) {
     var member = (S.ver && S.ver.member) || S.join, label = q.redeem && q.redeem.coupon ? "Discount (" + esc(q.redeem.coupon.code) + ")" : q.redeem && q.redeem.points ? "Discount (points)" : "Discount";
     h += '<div class="ck-sum"><span>Item total</span><span class="r">' + rs(q.subtotalMinor) + "</span>";
@@ -155,10 +163,13 @@ function secSummary() {
 function render() {
   var h = "";
   if (S.menu.mock) h += '<p class="ck-mock"><b>Demo mode.</b> The payment page, the SMS code and the offers are test only. No money moves and no real SMS is sent.</p>';
-  h += '<h1>Take away checkout</h1><p class="ck-sub">Order ahead and collect from the restaurant at Labbipet.</p>';
+  h += '<div class="ck-hero"><h1>Take away checkout</h1><p class="ck-sub">Order ahead and collect from the restaurant at Labbipet.</p></div>';
   root.className = "ck wide";
   if (!lines().length) { root.innerHTML = h + '<div class="ck-c"><p>Your cart is empty.</p><a class="ck-btn p" href="menu.html#menu">Choose dishes</a></div>'; return; }
-  h += '<div class="ck-grid"><div class="ck-col">' + secInfo() + secIdentity() + '</div><div class="ck-col">' + secCart() + secTip() + secRedeem() + secSummary() + "</div></div>";
+  var qq = S.q && S.q.ok ? S.q : null, done = [!!S.time, !!S.token, !!S.token && !!qq, false], cur = done.indexOf(false), SN = [["Pickup", "s-pickup"], ["You", "h-id"], ["Order", "s-order"], ["Pay", "s-pay"]];
+  h += '<ol class="ck-steps" aria-label="Checkout steps">' + SN.map(function (x, i) { return '<li class="' + (done[i] ? "done" : i === cur ? "cur" : "") + '"' + (i === cur ? ' aria-current="step"' : "") + '><a href="#' + x[1] + '"><span class="n">' + (done[i] ? "&#10003;" : i + 1) + "</span>" + x[0] + "</a></li>"; }).join("") + "</ol>";
+  h += '<div class="ck-grid"><div class="ck-col">' + secStart() + '</div><div class="ck-col">' + secOrder() + secRedeem() + '</div><div class="ck-col ck-side">' + secSummary() + "</div></div>";
+  h += '<div class="ck-bar"><div><small>Total</small><b>' + (qq ? rs(qq.totalMinor) : "\u2013") + '</b></div><button type="button" class="ck-btn p" data-act="barplace"' + (S.busy ? " disabled" : "") + ">" + (S.busy ? "Please wait..." : S.method === "cod" ? "Place order" : "Pay and place order") + "</button></div>";
   var keep = document.activeElement && document.activeElement.id, pos = keep && document.activeElement.selectionStart;
   root.innerHTML = h; if (keep) { var el = document.getElementById(keep); if (el) { el.focus(); try { if (pos != null) el.setSelectionRange(pos, pos); } catch (e) {} } }
   tick();
@@ -170,7 +181,8 @@ var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function resetRedeem() { S.redeem = { coupon: null, freebie: null, points: 0 }; }
 function refocus(sel) { var e = $(sel); if (e) e.focus(); }
 function onClick(e) {
-  var b = e.target.closest("[data-date],[data-time],[data-d],[data-rm],[data-mode],[data-act],[data-tip],[data-dlg],[data-note],[data-rmoffer]"); if (!b) return; var a = b.dataset;
+  var b = e.target.closest("[data-date],[data-time],[data-d],[data-rm],[data-mode],[data-act],[data-tip],[data-dlg],[data-note],[data-rmoffer],[data-meal]"); if (!b) return; var a = b.dataset;
+  if (a.meal) { S.tabMeal = a.meal; return render(); }
   if (a.date) return loadSlots(a.date, function () { render(); requote(render); });
   if (a.time) { S.time = a.time; S.picker = false; render(); return requote(render); }
   if (a.d) { var s = a.sku, n = (S.cart[s] || 0) + +a.d; if (n < 1) { delete S.cart[s]; delete S.notes[s]; } else S.cart[s] = Math.min(20, n); saveCart(); render(); return requote(render); }
@@ -189,8 +201,8 @@ function onClick(e) {
   if (a.act === "editphone") { S.otpSent = false; S.otp = ""; S.otpMsg = null; S.dev = null; return render(); }
   if (a.act === "resend") return sendCode(true);
   if (a.act === "verify") return verify();
-  if (a.act === "change") { S.token = null; S.ver = null; S.otpSent = false; S.otp = ""; S.dev = null; S.otpMsg = null; resetRedeem(); S.join = S.mode === "join"; render(); return requote(render); }
-  if (a.act === "place") return place();
+  if (a.act === "change") { api("/api/rewards/logout", {}); S.token = null; S.ver = null; S.otpSent = false; S.otp = ""; S.dev = null; S.otpMsg = null; resetRedeem(); S.join = S.mode === "join"; render(); return requote(render); }
+  if (a.act === "place" || a.act === "barplace") return place();
 }
 function onInput(e) {
   var t = e.target;
@@ -210,6 +222,7 @@ function otpBox(t) {
   if (d.length > 1) { for (var k = 0; k < d.length && i + k < 6; k++) boxes[i + k].value = d.charAt(k); } else t.value = d;
   S.otp = Array.prototype.map.call(boxes, function (x) { return x.value; }).join("");
   var nx = Math.min(5, i + Math.max(1, d.length)); if (d.length && boxes[nx]) boxes[nx].focus();
+  if (S.otp.length === 6) verify();
 }
 root.addEventListener("keydown", function (e) { var t = e.target; if (!t.classList || !t.classList.contains("ck-ob")) return; var i = +t.dataset.i; if (e.key === "Backspace" && !t.value && i > 0) { var p = $("#ck-o" + (i - 1)); p.value = ""; p.focus(); e.preventDefault(); S.otp = S.otp.slice(0, i - 1); } if (e.key === "Enter") verify(); });
 function tick() { var b = $("#ck-rs"); if (!b) return; var s = Math.max(0, Math.ceil((S.resendAt - Date.now()) / 1000)); b.textContent = s ? "Resend in " + s + "s" : "Resend code"; b.disabled = s > 0; }
@@ -217,7 +230,7 @@ setInterval(tick, 1000);
 function fe(m) { S.formErr = m; var e = $("#ck-formerr"); if (e) e.innerHTML = '<p class="ck-bad">' + esc(m) + "</p>"; }
 function nextStep() {
   S.formErr = ""; var p = normPhone(S.phone);
-  if (!S.name.trim()) return fe("Please enter your name."); if (!p) return fe("Please enter a valid 10-digit mobile number.");
+  if (!p) return fe("Please enter a valid 10-digit mobile number.");
   if (S.email.trim() && !EMAIL.test(S.email.trim())) return fe("That email address does not look right.");
   if (!S.terms) return fe("Please accept the Terms and Privacy Policy to continue.");
   S.phone = p; sendCode(false);
@@ -225,19 +238,90 @@ function nextStep() {
 function sendCode(resend) {
   var btn = $(resend ? "#ck-rs" : "[data-act=next]"); if (btn) btn.disabled = true;
   api("/api/otp/send", { phone: S.phone }).then(function (j) {
-    if (j.ok) { S.otpSent = true; S.dev = j.devCode || null; S.resendAt = Date.now() + 30000; S.otp = ""; S.otpMsg = resend ? { t: "A new code has been sent.", good: true } : null; render(); return refocus("#ck-o0"); }
+    if (j.ok) { S.otpSent = true; S.dev = j.devCode || null; S.resendAt = Date.now() + 30000; S.otp = ""; S.otpMsg = resend ? { t: "A new code has been sent.", good: true } : null; render(); rwWarm(); webOtp(); return refocus("#ck-o0"); }
     if (j.waitMs) S.resendAt = Date.now() + j.waitMs;
     if (S.otpSent) { S.otpMsg = { t: j.message }; render(); } else { S.formErr = j.message; render(); }
   });
 }
 function verify() {
+  if (S.vbusy) return;
   if (S.otp.length !== 6) { S.otpMsg = { t: "Enter all 6 digits of the code." }; var m = $("#ck-otpmsg"); if (m) m.innerHTML = '<p class="ck-bad">' + esc(S.otpMsg.t) + "</p>"; return; }
+  S.vbusy = true; var rw0 = $(".rw"); if (rw0) { rw0.dataset.st = "verifying"; var l0 = rw0.querySelector(".rw-lab"); if (l0) l0.textContent = "Checking your code\u2026"; }
   api("/api/otp/verify", { phone: S.phone, code: S.otp, purpose: "checkout" }).then(function (j) {
-    if (!j.ok) { S.otpMsg = { t: j.message + (j.triesLeft != null ? " (" + j.triesLeft + " tries left)" : "") }; var m = $("#ck-otpmsg"); if (m) m.innerHTML = '<p class="ck-bad">' + esc(S.otpMsg.t) + "</p>"; return; }
-    S.token = j.token; S.ver = j; if (j.name && !S.name.trim()) S.name = j.name; S.join = j.member ? false : S.mode === "join"; S.otpSent = false; S.otp = ""; S.otpMsg = null; S.dev = null;
-    store("mobile", S.phone); render(); requote(function () { render(); var s = $("#h-pay"); if (s) s.scrollIntoView({ behavior: "smooth", block: "center" }); });
-  });
+    if (!j.ok) {
+      S.vbusy = false; S.otp = ""; S.otpMsg = { t: j.message + (j.triesLeft != null ? " (" + j.triesLeft + " tries left)" : "") };
+      var rw = $(".rw"); if (rw) { rw.dataset.st = "otp"; rw.classList.add("err"); setTimeout(function () { rw.classList.remove("err"); }, 700); var l1 = rw.querySelector(".rw-lab"); if (l1) l1.textContent = "Enter the code to unlock"; }
+      var g = $(".ck-otp"); if (g) { g.classList.add("shake"); setTimeout(function () { g.classList.remove("shake"); }, 500); }
+      var bx = root.querySelectorAll(".ck-ob"); for (var q = 0; q < bx.length; q++) bx[q].value = ""; if (bx[0]) bx[0].focus();
+      var m = $("#ck-otpmsg"); if (m) m.innerHTML = '<p class="ck-bad">' + esc(S.otpMsg.t) + "</p>"; return;
+    }
+    var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches, rw = $(".rw");
+    if (rw && !still) { rw.classList.add("go"); if (navigator.vibrate) try { navigator.vibrate(20); } catch (e) {} }
+    setTimeout(function () {
+      S.token = j.token; S.ver = j; if (j.name && !S.name.trim()) S.name = j.name; S.join = j.member ? false : S.mode === "join"; S.otpSent = false; S.otp = ""; S.otpMsg = null; S.dev = null; S.vbusy = false; S.rwFresh = true;
+      store("mobile", S.phone); render(); rwFx();
+      requote(function () { var wait = still ? 0 : 1800; setTimeout(function () { render(); var c = $(".rw"); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); }, wait); });
+    }, rw && !still ? 800 : 0);
+  }).catch(function () { S.vbusy = false; });
 }
+/* ---------- Rewards swipe: locked -> otp -> verifying -> open (v98) ---------- */
+var RW_TIERS = [{ n: "Silver", at: 500 }, { n: "Gold", at: 2000 }, { n: "Village Elite", at: 5000 }];
+function rwTier(p) {
+  var next = null; for (var i = 0; i < RW_TIERS.length; i++) if (p < RW_TIERS[i].at) { next = RW_TIERS[i]; break; }
+  var pig = p < RW_TIERS[0].at ? "empty" : p < RW_TIERS[1].at ? "half" : "full", prev = 0;
+  for (var j = 0; j < RW_TIERS.length; j++) if (p >= RW_TIERS[j].at) prev = RW_TIERS[j].at;
+  var cur = ""; for (var k = 0; k < RW_TIERS.length; k++) if (p >= RW_TIERS[k].at) cur = RW_TIERS[k].n;
+  return { pig: pig, next: next, cur: cur, pct: next ? Math.max(4, Math.round((p - prev) / (next.at - prev) * 100)) : 100 };
+}
+function rwSwipe(st) {
+  var v = S.ver || {}, pts = st === "open" ? v.points : null, known = st === "open" && pts != null, t = known ? rwTier(pts) : null;
+  var pig = st === "open" && t ? t.pig : "empty";
+  var lab = { locked: "Swipe to unlock rewards", otp: "Enter the code to unlock", verifying: "Checking your code\u2026", open: "Rewards unlocked" }[st];
+  var sub = st === "locked" ? "Enter your mobile number to see your points." : st === "otp" ? "Type the 6-digit code. It unlocks by itself." : st === "verifying" ? "One moment\u2026" :
+    !known ? "Balance updating. You can still order." : !v.member && !pts ? "Welcome to Village Club. Your first order starts earning points." :
+    t.next ? "Get " + (t.next.at - pts) + " more points to unlock " + t.next.n : (t.cur || "Village Elite") + " member. Thank you!";
+  var n = st === "open" ? (known ? (S.rwFresh ? 0 : pts) : "\u2013") : "\u2013 \u2013";
+  return '<div class="rw' + (S.rwFresh ? " fresh" : "") + '" data-st="' + st + '"><div class="rw-card"><div class="rw-t"><small>Reward points</small><div class="rw-n" id="rw-n" data-v="' + (known ? pts : "") + '" aria-live="polite">' + n + '</div>' +
+    '<div class="rw-bar"><i style="--p:' + (known ? t.pct : 0) + '%"></i></div><p class="rw-sub">' + esc(sub) + '</p></div><img class="rw-pig" src="assets/rwd-pig-' + pig + '.webp" alt="" width="110" height="94" decoding="async"></div>' +
+    '<div class="rw-track" role="status" aria-label="' + esc(lab) + '"><i class="rw-fill"></i><span class="rw-lab">' + esc(lab) + '</span><span class="rw-knob"><img src="assets/rwd-coin.webp" alt="" width="34" height="36"></span></div>' + (st === "open" ? '<a class="rw-hist" href="checkout.html?find=1">View my orders and points &rsaquo;</a>' : "") + '</div>';
+}
+function rwFx() {
+  if (!S.rwFresh) return; S.rwFresh = false;
+  var rw = $(".rw"), el = $("#rw-n"); if (!rw || !el) return;
+  var to = +el.dataset.v, still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (el.dataset.v === "" || still) { el.textContent = el.dataset.v === "" ? "\u2013" : to; return; }
+  var t0 = performance.now(); (function f(now) { var k = Math.min(1, (now - t0) / 1200), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to * e); if (k < 1) requestAnimationFrame(f); })(t0);
+  var card = rw.querySelector(".rw-card"); for (var i = 0; i < 12; i++) { var c = document.createElement("img"); c.className = "rw-c"; c.src = "assets/rwd-coin.webp"; c.alt = ""; c.style.cssText = "--x:" + (62 + Math.random() * 30).toFixed(0) + "%;--d:" + (i * 70) + "ms"; card.appendChild(c); setTimeout(function (x) { return function () { x.remove(); }; }(c), 2200); }
+}
+function rwWarm() { ["half", "full"].forEach(function (k) { var i = new Image(); i.src = "assets/rwd-pig-" + k + ".webp"; }); }
+var otpAbort = null;
+function webOtp() {
+  if (!("OTPCredential" in window) || !navigator.credentials) return;
+  try { if (otpAbort) otpAbort.abort(); otpAbort = new AbortController();
+    navigator.credentials.get({ otp: { transport: ["sms"] }, signal: otpAbort.signal }).then(function (c) { if (c && c.code && S.otpSent) { S.otp = String(c.code).replace(/\D/g, "").slice(0, 6); var b = root.querySelectorAll(".ck-ob"); for (var i = 0; i < 6 && b[i]; i++) b[i].value = S.otp.charAt(i); if (S.otp.length === 6) verify(); } }).catch(function () {});
+  } catch (e) {}
+}
+function rwAct(rw) { if (!rw || rw.dataset.st === "open") return; if (!S.mode && !S.token) { S.mode = "join"; render(); return refocus("#ck-ph"); } rw.classList.add("nudge"); setTimeout(function () { rw.classList.remove("nudge"); }, 600); var f = $(S.otpSent ? "#ck-o0" : "#ck-ph"); if (f) f.focus(); }
+var swAt = 0;
+root.addEventListener("click", function (e) { if (Date.now() - swAt < 400) return; var tr = e.target.closest && e.target.closest(".rw-track"); rwAct(tr && tr.closest(".rw")); });
+/* real swipe: drag the coin to the right end (60%+) to unlock; a short drag springs back */
+(function () {
+  var d = null;
+  root.addEventListener("pointerdown", function (e) {
+    var k = e.target.closest && e.target.closest(".rw-knob"), rw = k && k.closest(".rw"); if (!rw || rw.dataset.st === "open" || rw.dataset.st === "verifying") return;
+    var tr = rw.querySelector(".rw-track"); d = { k: k, rw: rw, x0: e.clientX, dx: 0, max: Math.max(1, tr.clientWidth - k.offsetWidth + 8), fill: rw.querySelector(".rw-fill") };
+    try { k.setPointerCapture(e.pointerId); } catch (x) {} rw.classList.add("dragging"); k.classList.add("drag");
+  });
+  root.addEventListener("pointermove", function (e) {
+    if (!d) return; d.dx = Math.max(0, Math.min(d.max, e.clientX - d.x0));
+    d.k.style.transform = "translateX(" + d.dx + "px)"; d.fill.style.clipPath = "inset(0 " + (100 - 100 * Math.min(1, (d.dx + 34) / (d.max + 56))).toFixed(1) + "% 0 0 round 32px)";
+  });
+  function end() {
+    if (!d) return; var x = d; d = null; x.rw.classList.remove("dragging"); x.k.classList.remove("drag"); x.k.style.transform = ""; x.fill.style.clipPath = "";
+    if (x.dx > 6) swAt = Date.now(); if (x.dx > x.max * 0.6) rwAct(x.rw);
+  }
+  root.addEventListener("pointerup", end); root.addEventListener("pointercancel", end);
+})();
 /* ---------- coupon and freebie panels ---------- */
 function openDlg(kind) {
   S.dlgKind = kind; S.dlgMsg = ""; S.offers = null; drawDlg(); if (!dlg.open) dlg.showModal();
@@ -356,11 +440,12 @@ function start() {
     if (!m.ok || !m.live) return unavailable();
     S.menu = m; m.items.forEach(function (i) { S.byK[i.k] = i; S.bySku[i.sku] = i; }); loadCart(); S.tip = m.tip && m.tip.defaultPct ? { pct: m.tip.defaultPct } : null;   // 5% preselected, removable
     S.phone = store("mobile") || ""; S.name = store("name") || "";
+    var restore = api("/api/rewards/me").then(function (j) { if (j && j.ok && !S.token) { S.phone = j.phone; S.mode = "join"; S.token = j.token; S.ver = j; if (j.name && !S.name.trim()) S.name = j.name; S.join = !j.member; S.rwFresh = true; rwWarm(); } });
     api("/api/slots").then(function (s) {
       if (!s.ok) return unavailable(); S.today = s.today; S.days = s.days;
       var ds = dateList();
       function pick(k) { if (k >= ds.length) { loadSlots(s.date, go); return; } api("/api/slots?date=" + ds[k]).then(function (r) { if (r.ok && r.slots.length) { S.date = ds[k]; S.slots = r.slots; go(); } else pick(k + 1); }); }
-      function go() { render(); requote(render); }
+      function go() { restore.then(function () { if (!S.time) { var f0 = S.slots.filter(function (x) { return !x.full; })[0]; if (f0) S.time = f0.time; } var fx = S.rwFresh; render(); rwFx(); requote(function () { if (fx) setTimeout(render, 1600); else render(); }); }); }
       pick(0);
     });
   });

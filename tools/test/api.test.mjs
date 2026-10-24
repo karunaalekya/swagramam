@@ -106,14 +106,14 @@ test("lunch-only and dinner-only items are blocked on the wrong slot", async () 
 test("OTP: wrong, expired, resend, rate limit, single use", async () => {
   const env = env0(); const phone = newPhone(); let s = await call(env, sendR, "/api/otp/send", { phone }); const code = s.j.devCode;
   assert.equal((await call(env, sendR, "/api/otp/send", { phone })).j.error, "resend_wait");                                       // 30 s resend
-  const wrong = await call(env, verR, "/api/otp/verify", { phone, code: code === "000000" ? "111111" : "000000" }); assert.equal(wrong.j.error, "wrong_code"); assert.equal(wrong.j.triesLeft, 4);
+  const wrong = await call(env, verR, "/api/otp/verify", { phone, code: code === "000000" ? "111111" : "000000" }); assert.equal(wrong.j.error, "wrong_code"); assert.equal(wrong.j.triesLeft, 2);
   assert.ok((await call(env, verR, "/api/otp/verify", { phone, code })).j.ok);                                                      // right code still works after a wrong try
   assert.equal((await call(env, verR, "/api/otp/verify", { phone, code })).j.error, "no_code");                                    // single use
   const p2 = newPhone(); s = await call(env, sendR, "/api/otp/send", { phone: p2 }); env.TEST_NOW_MS = String(T0 + 6 * 60000);
   assert.equal((await call(env, verR, "/api/otp/verify", { phone: p2, code: s.j.devCode })).j.error, "expired"); env.TEST_NOW_MS = String(T0);
-  const p3 = newPhone(); s = await call(env, sendR, "/api/otp/send", { phone: p3 }); let last; for (let i = 0; i < 5; i++) last = await call(env, verR, "/api/otp/verify", { phone: p3, code: "999999" === s.j.devCode ? "888888" : "999999" });
-  assert.equal((await call(env, verR, "/api/otp/verify", { phone: p3, code: s.j.devCode })).j.error, "too_many_tries");              // 5 tries then locked
-  const p4 = newPhone(); const e2 = env0(); let n = 0; for (let i = 0; i < 7; i++) { e2.TEST_NOW_MS = String(T0 + i * 31000); const r = await call(e2, sendR, "/api/otp/send", { phone: p4 }); if (r.j.error === "rate_limited") n++; } assert.equal(n, 2);   // 5 per phone per hour
+  const p3 = newPhone(); s = await call(env, sendR, "/api/otp/send", { phone: p3 }); let last; for (let i = 0; i < 3; i++) last = await call(env, verR, "/api/otp/verify", { phone: p3, code: "999999" === s.j.devCode ? "888888" : "999999" });
+  assert.equal((await call(env, verR, "/api/otp/verify", { phone: p3, code: s.j.devCode })).j.error, "too_many_tries");              // 3 tries then locked
+  const p4 = newPhone(); const e2 = env0(); let n = 0; for (let i = 0; i < 7; i++) { e2.TEST_NOW_MS = String(T0 + i * 31000); const r = await call(e2, sendR, "/api/otp/send", { phone: p4 }); if (r.j.error === "rate_limited") n++; } assert.equal(n, 4);   // 3 per phone per hour
   assert.equal((await call(env, sendR, "/api/otp/send", { phone: "12345" })).j.error, "phone");
 });
 test("token: tampered, wrong purpose, reused", async () => {
