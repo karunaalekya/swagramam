@@ -3263,3 +3263,13 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
 #sx.por::before{background:url(assets/swagramam-intro-portrait-720w.webp) 50% 50%/cover no-repeat!important;filter:blur(20px) saturate(1.1) brightness(.95)!important}
 #sx.por .sx-pimg{inset:auto;left:0;width:100%;height:auto;aspect-ratio:2/3;top:var(--arty,60%);translate:0 -59%;background:url(assets/swagramam-intro-portrait-720w.webp) 0 0/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent 100%)}
 @media(min-width:721px){#sx.por .sx-pimg{background-image:url(assets/swagramam-intro-portrait-1024x1536.webp)}}
+
+/* ===== v101 portrait: hanging board on the tree (text, readable) ===== */
+#sx.por .sx-pimg{container-type:inline-size}
+#sx.por .sx-pimg::before{content:"";position:absolute;left:12cqw;top:39.5%;width:26cqw;height:5%;opacity:0;background:linear-gradient(#5a3a1a,#5a3a1a) 0 0/.7cqw 100% no-repeat,linear-gradient(#5a3a1a,#5a3a1a) 100% 0/.7cqw 100% no-repeat}
+#sx.por .sx-pimg::after{content:"SOUTH INDIAN KITCHEN\A VILLAGE DINING\A VIJAYAWADA";white-space:pre;text-align:center;position:absolute;left:4cqw;top:44%;width:46cqw;padding:2cqw 1cqw;box-sizing:border-box;opacity:0;font:700 3.2cqw/1.35 "DM Sans",system-ui,sans-serif;letter-spacing:.03em;color:#FFF4D6;background:#4a2a10;border:.5cqw solid #F7B12E;border-radius:1.2cqw;box-shadow:0 1cqw 2.4cqw rgba(0,0,0,.45);transform-origin:50% 0}
+#sx.por.go .sx-pimg::before{animation:sxbrd 1.2s 7s ease forwards}
+#sx.por.go .sx-pimg::after{animation:sxbrd 1.2s 7s ease forwards,sxbsw 5s 8.2s ease-in-out infinite alternate}
+@keyframes sxbrd{to{opacity:1}}
+@keyframes sxbsw{from{transform:rotate(-1.2deg)}to{transform:rotate(1.2deg)}}
+@media(prefers-reduced-motion:reduce){#sx.por .sx-pimg::after{animation:sxbrd 1s 7s forwards!important}}
