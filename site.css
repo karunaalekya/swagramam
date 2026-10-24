@@ -3278,3 +3278,6 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
 .sx-ld{opacity:0;animation:sx-ldin .5s 1.5s forwards}
 #sx.go .sx-ld{animation:none!important;opacity:0;visibility:hidden}
 @keyframes sx-ldin{to{opacity:1}}
+
+/* ===== v104 intro loader removed (desktop and mobile) ===== */
+.sx-ld{display:none!important}
