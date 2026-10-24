@@ -3273,3 +3273,8 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
 @keyframes sxbrd{to{opacity:1}}
 @keyframes sxbsw{from{transform:rotate(-1.2deg)}to{transform:rotate(1.2deg)}}
 @media(prefers-reduced-motion:reduce){#sx.por .sx-pimg::after{animation:sxbrd 1s 7s forwards!important}}
+
+/* ===== v102 loader: show only if loading takes more than 1.5s ===== */
+.sx-ld{opacity:0;animation:sx-ldin .5s 1.5s forwards}
+#sx.go .sx-ld{animation:none!important;opacity:0;visibility:hidden}
+@keyframes sx-ldin{to{opacity:1}}
