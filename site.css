@@ -3253,3 +3253,9 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
   body[data-pg="home"] #hx{padding-right:68px!important}
   body[data-pg="home"] #hx .hh{font-size:clamp(28px,8.8vw,38px)!important}
 }
+
+/* ===== v99 portrait intro: still painting on phones (revert with git revert) ===== */
+#sx .sx-pimg{display:none}
+#sx.por .sx-pimg{display:block;position:absolute;inset:0;z-index:0;pointer-events:none;background:#2a1408 url(assets/swagramam-intro-portrait-720w.webp) 50% 50%/cover no-repeat}
+@media(min-width:721px){#sx.por .sx-pimg{background-image:url(assets/swagramam-intro-portrait-1024x1536.webp)}}
+#sx.por .sx-art{display:none!important}
