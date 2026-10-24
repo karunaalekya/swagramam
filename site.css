@@ -3258,4 +3258,8 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
 #sx .sx-pimg{display:none}
 #sx.por .sx-pimg{display:block;position:absolute;inset:0;z-index:0;pointer-events:none;background:#2a1408 url(assets/swagramam-intro-portrait-720w.webp) 50% 50%/cover no-repeat}
 @media(min-width:721px){#sx.por .sx-pimg{background-image:url(assets/swagramam-intro-portrait-1024x1536.webp)}}
-#sx.por .sx-art{display:none!important}
+
+/* ===== v100 portrait: animated layer back on top of the new painting ===== */
+#sx.por::before{background:url(assets/swagramam-intro-portrait-720w.webp) 50% 50%/cover no-repeat!important;filter:blur(20px) saturate(1.1) brightness(.95)!important}
+#sx.por .sx-pimg{inset:auto;left:0;width:100%;height:auto;aspect-ratio:2/3;top:var(--arty,60%);translate:0 -59%;background:url(assets/swagramam-intro-portrait-720w.webp) 0 0/100% 100% no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent 100%)}
+@media(min-width:721px){#sx.por .sx-pimg{background-image:url(assets/swagramam-intro-portrait-1024x1536.webp)}}
