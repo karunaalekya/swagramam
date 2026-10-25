@@ -4,7 +4,7 @@ import { schemaTypes } from "./schemaTypes/index.js";
 
 export default defineConfig({
   name: "swagramam", title: "Swagramam Menu",
-  projectId: "YOUR_PROJECT_ID", dataset: "production",
+  projectId: "jgy72m9e", dataset: "production",
   plugins: [structureTool({ structure: S => S.list().title("Swagramam").items([
     S.documentTypeListItem("dish").title("Dishes"),
     S.documentTypeListItem("category").title("Categories"),
