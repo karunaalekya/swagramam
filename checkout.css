@@ -184,3 +184,77 @@ body{background:var(--iv)}
 .rw-fill{transform:none!important;clip-path:inset(0 100% 0 0 round 32px);transition:clip-path .8s cubic-bezier(.3,.9,.3,1)}
 .rw.go .rw-fill,.rw[data-st=open] .rw-fill{clip-path:inset(0 0 0 0 round 32px)}.rw[data-st=open]:not(.fresh) .rw-fill{transition:none}
 @media(min-width:1000px){.ck-bar{display:none}}
+
+/* ===== v102 redesign: no hero, slim strip, two panels with a centre gap, one right-hand card ===== */
+.ck-hero{display:none}
+.ck{padding:10px 16px 100px}
+.ck-strip{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 18px;margin:0 0 12px}
+.ck-st1{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;min-width:0}
+.ck-strip h1{margin:0;font:400 clamp(24px,5vw,30px)/1.1 var(--hf);color:var(--dk)}
+.ck-where{font:500 13px var(--bf);color:#5b5a4c}
+.ck-demo{font:600 11px var(--bf);letter-spacing:.04em;text-transform:uppercase;color:#8a5a00;background:#fbe9b8;border:1px dashed var(--go2);border-radius:999px;padding:3px 10px;cursor:help}
+.ck-strip .ck-steps{margin:0;flex:1 1 300px;max-width:520px}
+.ck-gap{display:none}
+.ck-terms{margin:6px 0 4px}
+.ck-lock .ck-offers{opacity:.45;filter:grayscale(.5)}
+.ck-lock h2 .ck-pill{font-size:11px}
+.ck-one .ck-c{background:none;border:0;box-shadow:none;border-radius:0;padding:0;margin:0}
+.ck-one{padding:16px}
+.ck-one .ck-top>.ck-c+.ck-c,.ck-one .ck-bot{border-top:1px dashed rgba(23,74,50,.25);margin-top:14px;padding-top:14px}
+.ck-one .ck-tip{margin-top:14px;padding-top:14px;border-top:1px dashed rgba(23,74,50,.25)}
+@media(max-width:1023px){.ck-grid{grid-template-columns:1fr}.ck-bar{display:flex}}
+@media(min-width:1024px){
+  .ck.wide{max-width:1400px;padding-bottom:14px}.ck-bar{display:none}
+  .ck-grid{grid-template-columns:minmax(0,34fr) 56px minmax(0,62fr);gap:0;align-items:stretch}
+  .ck-gap{display:flex;align-items:center;justify-content:center;position:relative}
+  .ck-gap i{display:block;width:2px;height:70%;border-radius:2px;background:linear-gradient(180deg,transparent,var(--go) 20%,var(--go) 80%,transparent)}
+  .ck-gap i::after{content:"\203A";position:absolute;left:50%;top:50%;translate:-50% -50%;width:30px;height:30px;border-radius:50%;background:var(--dk);color:var(--go);font:700 22px/28px var(--bf);text-align:center}
+  .ck-one{padding:18px 20px}
+  .rw-card{min-height:124px}.rw{margin:6px 0 10px}.rw-n{font-size:34px}
+}
+/* one screen on desktop: no page scroll, only the panels scroll inside themselves */
+@media(min-width:1024px) and (min-height:680px){
+  body:has(#ck.two){height:100dvh;overflow:hidden;display:flex;flex-direction:column}
+  body:has(#ck.two) .ck{flex:1 1 0;min-height:0;width:100%;display:flex;flex-direction:column}
+  body:has(#ck.two) .ck-grid{flex:1 1 0;min-height:0}
+  body:has(#ck.two) .ck-col{min-height:0;overflow:auto;padding:2px}
+  body:has(#ck.two) .ck-r .ck-one{height:100%;display:flex;flex-direction:column;margin:0}
+  body:has(#ck.two) .ck-top{flex:1 1 0;min-height:0;overflow:auto;padding-right:6px}
+  body:has(#ck.two) .ck-bot{flex:none}
+  body:has(#ck.two) .ck-ft{padding:6px 16px;font-size:12px}body:has(#ck.two) .ck-ft p{margin:0}
+  body:has(#ck.two) .ck-opt{padding:8px 12px}body:has(#ck.two) .ck-pay{gap:6px;margin-bottom:8px}
+  body:has(#ck.two) .ck-ln{padding:7px 0}body:has(#ck.two) .ck-strip{margin-bottom:8px}
+}
+
+/* v102b desktop compaction: two sub-columns in the right card, phone + name side by side, slimmer points card */
+.ck-pair{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:1024px){
+  .ck-pair{grid-template-columns:1.25fr 1fr;gap:0 10px}
+  .ck-pair .ck-in{min-height:44px}
+  .ck-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:0 26px;align-items:start}
+  .ck-one .ck-top>.ck-c+.ck-c{border-top:0;margin-top:0;padding-top:0;border-left:1px dashed rgba(23,74,50,.25);padding-left:22px}
+  .ck-pg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:0 26px;align-items:start}
+  #s-pay h2{margin-bottom:6px}
+  #s-pay .ck-pay{margin-bottom:6px}
+}
+@media(min-width:1024px) and (min-height:680px){
+  body:has(#ck.two) .ck-sum{gap:3px 12px}body:has(#ck.two) .ck-sum .t{font-size:17px;padding-top:6px;margin-top:2px}
+  body:has(#ck.two) .ck-opt small{font-size:12px}
+  body:has(#ck.two) .ck-btn.p.w{min-height:46px}
+  body:has(#ck.two) .ck-tip .ck-note:not(.ck-tipamt){display:none}
+  body:has(#ck.two) textarea.ck-in{min-height:44px;height:44px}
+  body:has(#ck.two) .ck-ord h2,body:has(#ck.two) .ck-tip h2{margin-bottom:6px}
+  body:has(#ck.two) .ck-more{min-height:34px;line-height:34px}
+  body:has(#ck.two) .ck-ln{padding:5px 0}.ck-q button{width:32px;height:32px}
+  body:has(#ck.two) .ck-pk h2{margin-bottom:4px}body:has(#ck.two) .ck-addr{display:none}
+  body:has(#ck.two) .ck-tm{margin:6px 0 0;padding:8px 10px}
+  body:has(#ck.two) .ck-id{margin-top:10px;padding-top:10px}body:has(#ck.two) .ck-id h2{margin-bottom:2px;font-size:18px}
+  body:has(#ck.two) .ck-id .ck-ok{margin:4px 0;padding:6px 12px}
+  body:has(#ck.two) .rw-card{min-height:96px;padding:10px 8px 6px 14px}body:has(#ck.two) .rw-n{font-size:30px}
+  body:has(#ck.two) .rw-pig{width:84px}body:has(#ck.two) .rw-bar{margin:5px 0 4px}body:has(#ck.two) .rw-sub{font-size:12px}
+  body:has(#ck.two) .rw-track{margin-bottom:14px}body:has(#ck.two) .rw{margin:4px 0 6px}
+  body:has(#ck.two) .ck-terms{margin:2px 0;font-size:13px}
+  body:has(#ck.two) label.ck-f{margin:6px 0 3px}
+  body:has(#ck.two) .ck-offer{padding:6px 0}
+}
+.ck-pair.one{grid-template-columns:1fr!important}

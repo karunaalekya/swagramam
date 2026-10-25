@@ -4,8 +4,9 @@
 "use strict";
 var $ = function (s, r) { return (r || document).querySelector(s); }, root = $("#ck"), dlg = $("#ck-dlg");
 var WA = "https://wa.me/917659858999?text=" + encodeURIComponent("Hi Swagramam, I want to place a take away order.");
+var OTP_LEN = 6;   // MSG91 code length: change here AND in the MSG91 template / backend check together
 var S = { menu: null, byK: {}, bySku: {}, cart: {}, notes: {}, noteOpen: {}, date: null, time: null, slots: [], today: null, days: 7, q: null, token: null, phone: "", ver: null,
-  mode: null, method: null, join: false, busy: false, note: "", name: "", email: "", terms: false, mkt: false, otpSent: false, otp: "", otpMsg: null, dev: null, resendAt: 0,
+  mode: "join", method: null, join: false, busy: false, note: "", name: "", email: "", terms: false, mkt: false, otpSent: false, otp: "", otpMsg: null, dev: null, resendAt: 0,
   picker: false, tip: { pct: 5 }, tipOther: false, tipAmt: "", tipMsg: "", redeem: { coupon: null, freebie: null, points: 0 }, offers: null, offerMsg: "", dlgKind: null, dlgMsg: "", info: false, formErr: "" };
 function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
 function rs(m) { return "Rs " + (m / 100).toLocaleString("en-IN", { minimumFractionDigits: m % 100 ? 2 : 0 }); }
@@ -53,35 +54,30 @@ function dateList() { var out = [], p = S.today.split("-"), b = Date.UTC(+p[0], 
 function secInfo() {
   var h = '<div class="ck-pk"><h2 id="h-info"><svg class="ck-pin" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Pickup details<span class="ck-pill">Today only</span></h2>';
   h += '<div class="ck-kv"><div><small>Pickup from</small><b>Swagramam, Labbipet</b><span class="ck-addr">Mogalrajapuram, Sidhartha Nagar, Vijayawada 520010</span></div></div>';
+  h += secTime();
   var q = S.q; if (q && q.ok && q.conflicts.length) q.conflicts.forEach(function (c) { h += '<p class="ck-bad" role="alert">' + esc(c.reason) + ' <button type="button" class="ck-rm" data-rm="' + esc(c.sku) + '">Remove it</button></p>'; });
   return h + "</div>";
 }
-function consents() {
-  var club = S.mode === "join" || (S.ver && S.ver.member);
-  return '<label class="ck-chk"><input type="checkbox" id="ck-terms"' + (S.terms ? " checked" : "") + '><span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a>, <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>' + (club ? ' and the <a href="rewards.html" target="_blank" rel="noopener">Village Club terms</a>' : "") + '. (Required)</span></label>' +
-    '<label class="ck-chk"><input type="checkbox" id="ck-mkt"' + (S.mkt ? " checked" : "") + '><span>Send me order alerts and offers by SMS or WhatsApp. (Optional)</span></label>';
+function termsBox() {
+  return '<label class="ck-chk ck-terms"><input type="checkbox" id="ck-terms"' + (S.terms ? " checked" : "") + '><span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a>, <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and the <a href="rewards.html" target="_blank" rel="noopener">Village Club terms</a>. (Required)</span></label>';
 }
 function secIdentity() {
   var h = '<div class="ck-id">';
   if (S.token) {
-    h += '<h2 id="h-id">Your details</h2><p class="ck-ok">Mobile verified: <b>+91 ' + esc(S.phone) + '</b> <button type="button" class="ck-rm" data-act="change">Change</button></p>';
-    h += rwSwipe("open");
-    h += '<label class="ck-f" for="ck-nm">Name (needed for your order)</label><input class="ck-in" id="ck-nm" autocomplete="name" maxlength="60" value="' + esc(S.name) + '"><label class="ck-f" for="ck-em">Email (optional)</label><input class="ck-in" id="ck-em" type="email" autocomplete="email" maxlength="120" value="' + esc(S.email) + '">' + consents();
-  } else if (!S.mode) {
-    h += '<h2 id="h-id">Sign in to unlock rewards, or continue as guest</h2><p class="ck-note">Village Club members earn points on every order and can use coupons and free dishes.</p>' + rwSwipe("locked");
-    h += '<div class="ck-two"><button type="button" class="ck-btn p" data-mode="join">Sign in / Join</button><button type="button" class="ck-btn" data-mode="guest">Continue as guest</button></div>';
-  } else {
-    h += '<h2 id="h-id">' + (S.mode === "join" ? "Sign in or join Village Club" : "Continue as guest") + '</h2><button type="button" class="ck-rm" data-mode="">&larr; Back</button>';
-    if (S.mode === "join") h += rwSwipe(S.otpSent ? (S.vbusy ? "verifying" : "otp") : "locked");
-    h += '<label class="ck-f" for="ck-ph">Mobile number</label><div class="ck-row"><input class="ck-in" id="ck-ph" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="14" placeholder="10-digit mobile" value="' + esc(S.phone) + '"' + (S.otpSent ? " readonly" : "") + '>' + (S.otpSent ? '<button type="button" class="ck-btn" data-act="editphone">Edit</button>' : "") + "</div>";
+    h += '<h2 id="h-id">Your details</h2><p class="ck-ok">Mobile verified: <b>+91 ' + esc(S.phone) + '</b> <button type="button" class="ck-rm" data-act="change">Change</button></p>' + rwSwipe("open");
     h += '<label class="ck-f" for="ck-nm">Name (optional)</label><input class="ck-in" id="ck-nm" autocomplete="name" maxlength="60" value="' + esc(S.name) + '">';
-    h += '<label class="ck-f" for="ck-em">Email (optional)</label><input class="ck-in" id="ck-em" type="email" autocomplete="email" maxlength="120" value="' + esc(S.email) + '">' + consents();
-    if (!S.otpSent) h += '<div id="ck-formerr" role="alert">' + (S.formErr ? '<p class="ck-bad">' + esc(S.formErr) + "</p>" : "") + '</div><button type="button" class="ck-btn p w" data-act="next">Next</button>';
+    if (!S.terms) h += termsBox();
+  } else {
+    h += '<h2 id="h-id">Your mobile number</h2>' + rwSwipe(S.otpSent ? (S.vbusy ? "verifying" : "otp") : "locked") + (S.otpSent && S.terms ? "" : termsBox());
+    h += '<div class="ck-pair' + (S.otpSent ? " one" : "") + '"><div><label class="ck-f" for="ck-ph">Mobile number</label><div class="ck-row"><input class="ck-in" id="ck-ph" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="14" placeholder="10-digit mobile" value="' + esc(S.phone) + '"' + (S.otpSent ? " readonly" : "") + '>' + (S.otpSent ? '<button type="button" class="ck-btn" data-act="editphone">Edit</button>' : "") + "</div></div>";
+    if (!S.otpSent) h += '<div><label class="ck-f" for="ck-nm">Name (optional)</label><input class="ck-in" id="ck-nm" autocomplete="name" maxlength="60" value="' + esc(S.name) + '"></div>';
+    h += "</div>";
+    if (!S.otpSent) h += '<div id="ck-formerr" role="alert">' + (S.formErr ? '<p class="ck-bad">' + esc(S.formErr) + "</p>" : "") + "</div>" + (S.formErr && S.terms ? '<button type="button" class="ck-btn p w" data-act="next">Send code</button>' : "");
     else {
-      h += '<p class="ck-f" id="ck-otp-l">Enter the 6-digit code sent to +91 ' + esc(S.phone) + '</p><div class="ck-otp" role="group" aria-labelledby="ck-otp-l">';
-      for (var i = 0; i < 6; i++) h += '<input class="ck-ob" id="ck-o' + i + '" data-i="' + i + '" inputmode="numeric" autocomplete="' + (i ? "off" : "one-time-code") + '" maxlength="1" aria-label="Digit ' + (i + 1) + ' of 6" value="' + esc(S.otp.charAt(i)) + '">';
+      h += '<p class="ck-f" id="ck-otp-l">Enter the ' + OTP_LEN + '-digit code sent to +91 ' + esc(S.phone) + '</p><div class="ck-otp" role="group" aria-labelledby="ck-otp-l">';
+      for (var i = 0; i < OTP_LEN; i++) h += '<input class="ck-ob" id="ck-o' + i + '" data-i="' + i + '" inputmode="numeric" autocomplete="' + (i ? "off" : "one-time-code") + '" maxlength="1" aria-label="Digit ' + (i + 1) + ' of ' + OTP_LEN + '" value="' + esc(S.otp.charAt(i)) + '">';
       h += '</div><div id="ck-otpmsg" role="alert">' + (S.otpMsg ? '<p class="' + (S.otpMsg.good ? "ck-ok" : "ck-bad") + '">' + esc(S.otpMsg.t) + "</p>" : "") + "</div>" + (S.dev ? '<p class="ck-ok">Test code (demo only): <b>' + esc(S.dev) + "</b></p>" : "");
-      h += '<div class="ck-two"><button type="button" class="ck-btn" id="ck-rs" data-act="resend"></button><button type="button" class="ck-btn p" data-act="verify">Continue to payment</button></div>';
+      h += '<div class="ck-two"><button type="button" class="ck-btn" id="ck-rs" data-act="resend"></button><button type="button" class="ck-btn p" data-act="verify">Verify code</button></div>';
     }
   }
   return h + "</div>";
@@ -114,18 +110,17 @@ function secTip() {
 }
 function secOrder() { return '<section class="ck-c" id="s-order" aria-labelledby="h-cart">' + secCart() + secTip() + "</section>"; }
 function secRedeem() {
-  var q = S.q, ok = q && q.ok, rd = ok && q.redeem, pi = ok && q.pointsInfo, h = '<section class="ck-c" id="s-offers" aria-labelledby="h-rw"><h2 id="h-rw">Redeem rewards and promos</h2>';
-  if (!S.token) h += '<p class="ck-note">Verify your mobile number to use coupons, free dishes and points.</p>';
+  var q = S.q, ok = q && q.ok, rd = ok && q.redeem, pi = ok && q.pointsInfo, lock = !S.token;
+  var h = '<section class="ck-c' + (lock ? " ck-lock" : "") + '" id="s-offers" aria-labelledby="h-rw"><h2 id="h-rw">Redeem rewards and promos' + (lock ? '<span class="ck-pill">Verify mobile to unlock</span>' : "") + '</h2><div class="ck-offers"' + (lock ? ' inert aria-disabled="true"' : "") + ">";
   h += '<div class="ck-offer"><div><b>Apply coupon</b>' + (rd && rd.coupon ? '<span class="ck-tag">' + esc(rd.coupon.code) + " applied &middot; you save " + rs(rd.coupon.discountMinor) + "</span>" : "") + "</div>" + (rd && rd.coupon ? '<button type="button" class="ck-rm" data-rmoffer="coupon">Remove</button>' : '<button type="button" class="ck-btn sm" data-dlg="coupon">Apply</button>') + "</div>";
   h += '<div class="ck-offer"><div><b>Redeem freebies</b>' + (ok && q.freebie ? '<span class="ck-tag">' + esc(q.freebie.title) + " added</span>" : "") + "</div>" + (ok && q.freebie ? '<button type="button" class="ck-rm" data-rmoffer="freebie">Remove</button>' : '<button type="button" class="ck-btn sm" data-dlg="freebie">Choose</button>') + "</div>";
   if (pi && pi.member) {
     h += '<div class="ck-offer col"><label class="ck-chk tight"><input type="checkbox" id="ck-usepts"' + (S.redeem.points ? " checked" : "") + (pi.max ? "" : " disabled") + '><span><b>Use Village Club points</b><small>You have ' + pi.balance + " points" + (pi.max ? "" : pi.balance >= pi.min ? ". This order is too small to use them." : ". Use them once you have " + pi.min + ".") + "</small></span></label>";
     if (S.redeem.points && pi.max) h += '<input type="range" id="ck-pts" min="' + pi.min + '" max="' + pi.max + '" step="' + pi.step + '" value="' + S.redeem.points + '" aria-label="Points to use"><p class="ck-note" id="ck-ptslab" aria-live="polite">' + S.redeem.points + " points = " + rs(S.redeem.points * pi.valueMinor) + " off</p>";
     h += "</div>";
-  } else if (S.token && ok) h += '<p class="ck-note">Join Village Club free (tick it below) to earn points and use member offers.</p>';
-  if (S.token && S.ver && !S.ver.member) h += '<label class="ck-chk"><input type="checkbox" id="ck-join"' + (S.join ? " checked" : "") + '><span>Join Village Club free</span></label>';
+  } else if (S.token && ok) h += '<p class="ck-note">You are joining Village Club free with this order. Points start from this order.</p>';
   if (S.offerMsg) h += '<p class="ck-bad" role="alert">' + esc(S.offerMsg) + "</p>";
-  return h + '<p class="ck-note">One offer per order. <a href="rewards.html">How rewards work</a></p></section>';
+  return h + '<p class="ck-note">One offer per order. <a href="rewards.html">How rewards work</a></p></div></section>';
 }
 function secTime() {
   var open = S.picker, free = S.slots.filter(function (x) { return !x.full; }), meal = S.tabMeal || (S.time && (S.slots.filter(function (x) { return x.time === S.time; })[0] || {}).meal) || (free[0] && free[0].meal) || "l";
@@ -141,8 +136,7 @@ function secTime() {
   return h + "</div>";
 }
 function secSummary() {
-  var q = S.q, ok = q && q.ok, h = '<section class="ck-c" id="s-pay" aria-labelledby="h-pay"><h2 id="h-pay">Payment summary</h2>';
-  h += secTime();
+  var q = S.q, ok = q && q.ok, h = '<section class="ck-c" id="s-pay" aria-labelledby="h-pay"><h2 id="h-pay">Payment summary</h2><div class="ck-pg"><div class="ck-sl">';
   if (ok) {
     var member = (S.ver && S.ver.member) || S.join, label = q.redeem && q.redeem.coupon ? "Discount (" + esc(q.redeem.coupon.code) + ")" : q.redeem && q.redeem.points ? "Discount (points)" : "Discount";
     h += '<div class="ck-sum"><span>Item total</span><span class="r">' + rs(q.subtotalMinor) + "</span>";
@@ -152,23 +146,23 @@ function secSummary() {
     if (S.info) h += '<span class="ck-tipbox" role="note">GST ' + q.gstPct + "% is charged on the item total after any discount." + (q.gstAssumed ? " The rate is a placeholder until the restaurant confirms it." : "") + " The tip is not taxed.</span>";
     h += '<span class="ck-green">Points earning</span><span class="r ck-green">+ ' + q.pointsToEarn + " points</span>";
     h += '<span class="t">Total including all taxes</span><span class="t r" id="ck-total">' + rs(q.totalMinor) + "</span></div>";
-    if (!member) h += '<p class="ck-pts">Join Village Club to earn these points.</p>';
-    h += '<div class="ck-pay" role="radiogroup" aria-label="How to pay"><label class="ck-opt"><input type="radio" name="pm" value="payu"' + (S.method === "payu" ? " checked" : "") + '><span><b>Pay online now</b><small>UPI, cards and net banking on PayU</small></span></label>';
+    if (!member) h += '<p class="ck-pts">Verify your mobile to earn these points.</p>';
+    h += '</div><div class="ck-sr"><div class="ck-pay" role="radiogroup" aria-label="How to pay"><label class="ck-opt"><input type="radio" name="pm" value="payu"' + (S.method === "payu" ? " checked" : "") + '><span><b>Pay online now</b><small>UPI, cards and net banking on PayU</small></span></label>';
     var cod = q.methods.indexOf("cod") >= 0, why = { over_limit: "Pay at pickup is for orders up to " + rs(S.menu.codMaxMinor) + " including tip. Please pay online.", noshows: "Pay at pickup is not available on this number. Please pay online.", open_cap: "You already have open pay at pickup orders. Please pay online or collect them first.", off: "Pay at pickup is not available right now." }[q.codReason] || "";
     h += '<label class="ck-opt' + (cod ? "" : " off") + '"><input type="radio" name="pm" value="cod"' + (cod ? "" : " disabled") + (S.method === "cod" ? " checked" : "") + '><span><b>Pay at pickup</b><small>' + (cod ? "Pay at the counter when you collect (orders up to " + rs(S.menu.codMaxMinor) + ")" : esc(why)) + "</small></span></label></div>";
   } else if (q && q.error) h += '<p class="ck-bad">' + esc(q.error) + "</p>"; else h += '<p class="ck-note">Pricing...</p>';
-  h += '<div id="ck-err" role="alert"></div><button type="button" class="ck-btn p w" data-act="place"' + (S.busy ? " disabled" : "") + ">" + (S.busy ? "Please wait..." : S.method === "cod" ? "Place order" : "Pay " + (ok ? rs(q.totalMinor) : "") + " and place order") + "</button></section>";
+  if (!ok) h += '</div><div class="ck-sr">';
+  h += '<div id="ck-err" role="alert"></div><button type="button" class="ck-btn p w" data-act="place"' + (S.busy ? " disabled" : "") + ">" + (S.busy ? "Please wait..." : S.method === "cod" ? "Place order" : "Pay " + (ok ? rs(q.totalMinor) : "") + " and place order") + "</button></div></div></section>";
   return h;
 }
 function render() {
-  var h = "";
-  if (S.menu.mock) h += '<p class="ck-mock"><b>Demo mode.</b> The payment page, the SMS code and the offers are test only. No money moves and no real SMS is sent.</p>';
-  h += '<div class="ck-hero"><h1>Take away checkout</h1><p class="ck-sub">Order ahead and collect from the restaurant at Labbipet.</p></div>';
-  root.className = "ck wide";
-  if (!lines().length) { root.innerHTML = h + '<div class="ck-c"><p>Your cart is empty.</p><a class="ck-btn p" href="menu.html#menu">Choose dishes</a></div>'; return; }
+  var demo = S.menu.mock ? '<span class="ck-demo" tabindex="0" title="Demo mode. The payment page, the SMS code and the offers are test only. No money moves and no real SMS is sent.">Demo mode</span>' : "";
+  var strip = '<div class="ck-strip"><div class="ck-st1"><h1>Take away checkout</h1><span class="ck-where">Swagramam &middot; Labbipet</span>' + demo + "</div>";
+  if (!lines().length) { root.className = "ck wide"; root.innerHTML = strip + '</div><div class="ck-c"><p>Your cart is empty.</p><a class="ck-btn p" href="menu.html#menu">Choose dishes</a></div>'; return; }
+  root.className = "ck wide two";
   var qq = S.q && S.q.ok ? S.q : null, done = [!!S.time, !!S.token, !!S.token && !!qq, false], cur = done.indexOf(false), SN = [["Pickup", "s-pickup"], ["You", "h-id"], ["Order", "s-order"], ["Pay", "s-pay"]];
-  h += '<ol class="ck-steps" aria-label="Checkout steps">' + SN.map(function (x, i) { return '<li class="' + (done[i] ? "done" : i === cur ? "cur" : "") + '"' + (i === cur ? ' aria-current="step"' : "") + '><a href="#' + x[1] + '"><span class="n">' + (done[i] ? "&#10003;" : i + 1) + "</span>" + x[0] + "</a></li>"; }).join("") + "</ol>";
-  h += '<div class="ck-grid"><div class="ck-col">' + secStart() + '</div><div class="ck-col">' + secOrder() + secRedeem() + '</div><div class="ck-col ck-side">' + secSummary() + "</div></div>";
+  var h = strip + '<ol class="ck-steps" aria-label="Checkout steps">' + SN.map(function (x, i) { return '<li class="' + (done[i] ? "done" : i === cur ? "cur" : "") + '"' + (i === cur ? ' aria-current="step"' : "") + '><a href="#' + x[1] + '"><span class="n">' + (done[i] ? "&#10003;" : i + 1) + "</span>" + x[0] + "</a></li>"; }).join("") + "</ol></div>";
+  h += '<div class="ck-grid"><div class="ck-col ck-l">' + secStart() + '</div><div class="ck-gap" aria-hidden="true"><i></i></div><div class="ck-col ck-r"><div class="ck-c ck-one"><div class="ck-top">' + secOrder() + secRedeem() + '</div><div class="ck-bot">' + secSummary() + "</div></div></div></div>";
   h += '<div class="ck-bar"><div><small>Total</small><b>' + (qq ? rs(qq.totalMinor) : "\u2013") + '</b></div><button type="button" class="ck-btn p" data-act="barplace"' + (S.busy ? " disabled" : "") + ">" + (S.busy ? "Please wait..." : S.method === "cod" ? "Place order" : "Pay and place order") + "</button></div>";
   var keep = document.activeElement && document.activeElement.id, pos = keep && document.activeElement.selectionStart;
   root.innerHTML = h; if (keep) { var el = document.getElementById(keep); if (el) { el.focus(); try { if (pos != null) el.setSelectionRange(pos, pos); } catch (e) {} } }
@@ -207,22 +201,21 @@ function onClick(e) {
 function onInput(e) {
   var t = e.target;
   if (t.classList.contains("ck-ob")) return otpBox(t);
-  if (t.id === "ck-ph") S.phone = t.value.replace(/[^\d+ ]/g, ""); else if (t.id === "ck-note") S.note = t.value; else if (t.id === "ck-nm") S.name = t.value; else if (t.id === "ck-em") S.email = t.value;
-  else if (t.id === "ck-terms") S.terms = t.checked; else if (t.id === "ck-mkt") S.mkt = t.checked;
-  else if (t.id === "ck-join") { S.join = t.checked; requote(render); }
+  if (t.id === "ck-ph") { S.phone = t.value.replace(/[^\d+ ]/g, ""); clearTimeout(autoSend.t); autoSend.t = setTimeout(autoSend, 250); } else if (t.id === "ck-note") S.note = t.value; else if (t.id === "ck-nm") S.name = t.value; else if (t.id === "ck-em") S.email = t.value;
+  else if (t.id === "ck-terms") { S.terms = t.checked; if (t.checked) { S.formErr = ""; var fe0 = $("#ck-formerr"); if (fe0) fe0.innerHTML = ""; autoSend(); } }
   else if (t.dataset && t.dataset.nsku) { var v = t.value.trim(); if (v) S.notes[t.dataset.nsku] = v; else delete S.notes[t.dataset.nsku]; saveCart(); }
   else if (t.id === "ck-tipamt") { S.tipAmt = t.value.replace(/[^\d.]/g, ""); S.tipMsg = ""; requoteSoon(); }
   else if (t.id === "ck-usepts") { if (t.checked && S.q && S.q.pointsInfo) { if (!S.menu.offersStack) { S.redeem.coupon = null; S.redeem.freebie = null; } S.redeem.points = S.q.pointsInfo.max; } else S.redeem.points = 0; S.offerMsg = ""; render(); requote(render); }
   else if (t.id === "ck-pts") { S.redeem.points = +t.value; var l = $("#ck-ptslab"); if (l && S.q) l.textContent = S.redeem.points + " points = " + rs(S.redeem.points * S.q.pointsInfo.valueMinor) + " off"; requoteSoon(); }
   else if (t.name === "pm") { S.method = t.value; render(); }
 }
-/* ---------- OTP: 6 boxes, auto-advance, paste, backspace, 30 s resend timer ---------- */
+/* ---------- OTP: OTP_LEN boxes, auto-advance, paste, backspace, auto-submit, 30 s resend timer ---------- */
 function otpBox(t) {
   var d = t.value.replace(/\D/g, ""), i = +t.dataset.i, boxes = root.querySelectorAll(".ck-ob");
-  if (d.length > 1) { for (var k = 0; k < d.length && i + k < 6; k++) boxes[i + k].value = d.charAt(k); } else t.value = d;
+  if (d.length > 1) { for (var k = 0; k < d.length && i + k < OTP_LEN; k++) boxes[i + k].value = d.charAt(k); } else t.value = d;
   S.otp = Array.prototype.map.call(boxes, function (x) { return x.value; }).join("");
-  var nx = Math.min(5, i + Math.max(1, d.length)); if (d.length && boxes[nx]) boxes[nx].focus();
-  if (S.otp.length === 6) verify();
+  var nx = Math.min(OTP_LEN - 1, i + Math.max(1, d.length)); if (d.length && boxes[nx]) boxes[nx].focus();
+  if (S.otp.length === OTP_LEN) verify();
 }
 root.addEventListener("keydown", function (e) { var t = e.target; if (!t.classList || !t.classList.contains("ck-ob")) return; var i = +t.dataset.i; if (e.key === "Backspace" && !t.value && i > 0) { var p = $("#ck-o" + (i - 1)); p.value = ""; p.focus(); e.preventDefault(); S.otp = S.otp.slice(0, i - 1); } if (e.key === "Enter") verify(); });
 function tick() { var b = $("#ck-rs"); if (!b) return; var s = Math.max(0, Math.ceil((S.resendAt - Date.now()) / 1000)); b.textContent = s ? "Resend in " + s + "s" : "Resend code"; b.disabled = s > 0; }
@@ -231,13 +224,20 @@ function fe(m) { S.formErr = m; var e = $("#ck-formerr"); if (e) e.innerHTML = '
 function nextStep() {
   S.formErr = ""; var p = normPhone(S.phone);
   if (!p) return fe("Please enter a valid 10-digit mobile number.");
-  if (S.email.trim() && !EMAIL.test(S.email.trim())) return fe("That email address does not look right.");
   if (!S.terms) return fe("Please accept the Terms and Privacy Policy to continue.");
   S.phone = p; sendCode(false);
 }
+function autoSend() {   // the code goes out by itself once the number is complete and the terms are ticked
+  if (S.otpSent || S.sending || S.token) return;
+  var p = normPhone(S.phone); if (!p) return;
+  if (!S.terms) return fe("Tick the box above to get your code.");
+  S.formErr = ""; S.phone = p; sendCode(false);
+}
 function sendCode(resend) {
+  if (S.sending) return; S.sending = true;
   var btn = $(resend ? "#ck-rs" : "[data-act=next]"); if (btn) btn.disabled = true;
   api("/api/otp/send", { phone: S.phone }).then(function (j) {
+    S.sending = false;
     if (j.ok) { S.otpSent = true; S.dev = j.devCode || null; S.resendAt = Date.now() + 30000; S.otp = ""; S.otpMsg = resend ? { t: "A new code has been sent.", good: true } : null; render(); rwWarm(); webOtp(); return refocus("#ck-o0"); }
     if (j.waitMs) S.resendAt = Date.now() + j.waitMs;
     if (S.otpSent) { S.otpMsg = { t: j.message }; render(); } else { S.formErr = j.message; render(); }
@@ -245,7 +245,7 @@ function sendCode(resend) {
 }
 function verify() {
   if (S.vbusy) return;
-  if (S.otp.length !== 6) { S.otpMsg = { t: "Enter all 6 digits of the code." }; var m = $("#ck-otpmsg"); if (m) m.innerHTML = '<p class="ck-bad">' + esc(S.otpMsg.t) + "</p>"; return; }
+  if (S.otp.length !== OTP_LEN) { S.otpMsg = { t: "Enter all " + OTP_LEN + " digits of the code." }; var m = $("#ck-otpmsg"); if (m) m.innerHTML = '<p class="ck-bad">' + esc(S.otpMsg.t) + "</p>"; return; }
   S.vbusy = true; var rw0 = $(".rw"); if (rw0) { rw0.dataset.st = "verifying"; var l0 = rw0.querySelector(".rw-lab"); if (l0) l0.textContent = "Checking your code\u2026"; }
   api("/api/otp/verify", { phone: S.phone, code: S.otp, purpose: "checkout" }).then(function (j) {
     if (!j.ok) {
@@ -260,7 +260,7 @@ function verify() {
     setTimeout(function () {
       S.token = j.token; S.ver = j; if (j.name && !S.name.trim()) S.name = j.name; S.join = j.member ? false : S.mode === "join"; S.otpSent = false; S.otp = ""; S.otpMsg = null; S.dev = null; S.vbusy = false; S.rwFresh = true;
       store("mobile", S.phone); render(); rwFx();
-      requote(function () { var wait = still ? 0 : 1800; setTimeout(function () { render(); var c = $(".rw"); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); }, wait); });
+      requote(function () { var wait = still ? 0 : 1800; setTimeout(function () { render(); var o = $("#s-offers"); if (o && innerWidth < 1024) o.scrollIntoView({ behavior: "smooth", block: "start" }); else { var rc = $(".rw"); if (rc) rc.scrollIntoView({ behavior: "smooth", block: "nearest" }); } }, wait); });
     }, rw && !still ? 800 : 0);
   }).catch(function () { S.vbusy = false; });
 }
@@ -277,7 +277,7 @@ function rwSwipe(st) {
   var v = S.ver || {}, pts = st === "open" ? v.points : null, known = st === "open" && pts != null, t = known ? rwTier(pts) : null;
   var pig = st === "open" && t ? t.pig : "empty";
   var lab = { locked: "Swipe to unlock rewards", otp: "Enter the code to unlock", verifying: "Checking your code\u2026", open: "Rewards unlocked" }[st];
-  var sub = st === "locked" ? "Enter your mobile number to see your points." : st === "otp" ? "Type the 6-digit code. It unlocks by itself." : st === "verifying" ? "One moment\u2026" :
+  var sub = st === "locked" ? "Enter your mobile number to see your points." : st === "otp" ? "Type the " + OTP_LEN + "-digit code. It unlocks by itself." : st === "verifying" ? "One moment\u2026" :
     !known ? "Balance updating. You can still order." : !v.member && !pts ? "Welcome to Village Club. Your first order starts earning points." :
     t.next ? "Get " + (t.next.at - pts) + " more points to unlock " + t.next.n : (t.cur || "Village Elite") + " member. Thank you!";
   var n = st === "open" ? (known ? (S.rwFresh ? 0 : pts) : "\u2013") : "\u2013 \u2013";
@@ -298,10 +298,10 @@ var otpAbort = null;
 function webOtp() {
   if (!("OTPCredential" in window) || !navigator.credentials) return;
   try { if (otpAbort) otpAbort.abort(); otpAbort = new AbortController();
-    navigator.credentials.get({ otp: { transport: ["sms"] }, signal: otpAbort.signal }).then(function (c) { if (c && c.code && S.otpSent) { S.otp = String(c.code).replace(/\D/g, "").slice(0, 6); var b = root.querySelectorAll(".ck-ob"); for (var i = 0; i < 6 && b[i]; i++) b[i].value = S.otp.charAt(i); if (S.otp.length === 6) verify(); } }).catch(function () {});
+    navigator.credentials.get({ otp: { transport: ["sms"] }, signal: otpAbort.signal }).then(function (c) { if (c && c.code && S.otpSent) { S.otp = String(c.code).replace(/\D/g, "").slice(0, OTP_LEN); var b = root.querySelectorAll(".ck-ob"); for (var i = 0; i < OTP_LEN && b[i]; i++) b[i].value = S.otp.charAt(i); if (S.otp.length === OTP_LEN) verify(); } }).catch(function () {});
   } catch (e) {}
 }
-function rwAct(rw) { if (!rw || rw.dataset.st === "open") return; if (!S.mode && !S.token) { S.mode = "join"; render(); return refocus("#ck-ph"); } rw.classList.add("nudge"); setTimeout(function () { rw.classList.remove("nudge"); }, 600); var f = $(S.otpSent ? "#ck-o0" : "#ck-ph"); if (f) f.focus(); }
+function rwAct(rw) { if (!rw || rw.dataset.st === "open") return; rw.classList.add("nudge"); setTimeout(function () { rw.classList.remove("nudge"); }, 600); var f = $(S.otpSent ? "#ck-o0" : !S.terms ? "#ck-terms" : "#ck-ph"); if (f) f.focus(); }
 var swAt = 0;
 root.addEventListener("click", function (e) { if (Date.now() - swAt < 400) return; var tr = e.target.closest && e.target.closest(".rw-track"); rwAct(tr && tr.closest(".rw")); });
 /* real swipe: drag the coin to the right end (60%+) to unlock; a short drag springs back */
@@ -363,14 +363,12 @@ function place() {
   if (!S.q || !S.q.ok) return err("Please fix your order first.");
   if (!S.date || !S.time) { S.picker = true; render(); return err("Please choose a pickup day and time."); }
   if (S.q.conflicts.length) return err(S.q.conflicts[0].reason);
-  if (!S.token) return err("Please verify your mobile number first. Use Sign in / Join or Continue as guest above.");
-  if (!S.name.trim()) return err("Please enter your name.");
-  if (S.email.trim() && !EMAIL.test(S.email.trim())) return err("That email address does not look right.");
+  if (!S.token) return err("Please verify your mobile number first. Enter it on the left and we will send you a code.");
   if (!S.method) return err("Please choose how to pay.");
   if (!S.terms) return err("Please accept the Terms and Privacy Policy to place your order.");
   if (S.tipMsg) return err(S.tipMsg);
   S.busy = true; render(); store("name", S.name.trim());
-  api("/api/checkout/start", { token: S.token, lines: lines(), slot: { date: S.date, time: S.time }, method: S.method, name: S.name, email: S.email, note: S.note, join: S.join, tip: tipChoice() || undefined, redeem: redeemChoice(), consent: { terms: S.terms, marketing: S.mkt } }).then(function (j) {
+  api("/api/checkout/start", { token: S.token, lines: lines(), slot: { date: S.date, time: S.time }, method: S.method, name: S.name.trim() || "Guest", email: "", note: S.note, join: S.join, tip: tipChoice() || undefined, redeem: redeemChoice(), consent: { terms: S.terms, marketing: false } }).then(function (j) {
     if (!j.ok) { S.busy = false; if (j.error === "bad_token" || j.error === "token_used") { S.token = null; S.ver = null; S.otpSent = false; S.dev = null; } if (/offer|used|points|coupon|one_offer|member_only|expired|min/.test(j.error)) { resetRedeem(); requote(render); } render(); return err(j.message); }
     if (j.method === "cod") { location.href = "checkout.html?o=" + j.orderId; return; }
     var f = document.createElement("form"); f.method = "POST"; f.action = j.redirect.url;
@@ -418,7 +416,7 @@ function statusView(id) {
 /* ---------- order lookup ---------- */
 function lookupView() {
   var L = { phone: store("mobile") || "", token: null };
-  function draw(extra) { root.innerHTML = '<h1>Find my orders</h1><section class="ck-c"><label class="ck-f" for="lk-ph">Mobile number</label><div class="ck-row"><input class="ck-in" id="lk-ph" type="tel" inputmode="numeric" maxlength="14" value="' + esc(L.phone) + '"><button class="ck-btn" id="lk-send" type="button">Send code</button></div><div class="ck-row" style="margin-top:10px"><input class="ck-in" id="lk-otp" inputmode="numeric" maxlength="6" placeholder="6-digit code"><button class="ck-btn p" id="lk-go" type="button">Show orders</button></div><div id="lk-m"></div>' + (extra || "") + "</section>"; }
+  function draw(extra) { root.innerHTML = '<h1>Find my orders</h1><section class="ck-c"><label class="ck-f" for="lk-ph">Mobile number</label><div class="ck-row"><input class="ck-in" id="lk-ph" type="tel" inputmode="numeric" maxlength="14" value="' + esc(L.phone) + '"><button class="ck-btn" id="lk-send" type="button">Send code</button></div><div class="ck-row" style="margin-top:10px"><input class="ck-in" id="lk-otp" inputmode="numeric" maxlength="6" placeholder="' + OTP_LEN + '-digit code"><button class="ck-btn p" id="lk-go" type="button">Show orders</button></div><div id="lk-m"></div>' + (extra || "") + "</section>"; }
   draw();
   root.addEventListener("click", function (e) {
     var m = function (t, g) { $("#lk-m").innerHTML = t ? '<p class="' + (g ? "ck-ok" : "ck-bad") + '">' + esc(t) + "</p>" : ""; };
