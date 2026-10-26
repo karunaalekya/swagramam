@@ -80,3 +80,8 @@ Unzip over the v95 repo, `git add` the listed paths by name, push.
 ## v97 phase 1 patch list (23 Oct 2026)
 New: db/migrations/002_tip_discount.sql, 003_redemptions.sql; functions/_lib/pricing.js, offers.js, redeem.js; functions/api/offers.js; tools/test/loyalty.test.mjs.
 Changed: functions/_lib/orders.js, functions/api/quote.js, functions/api/menu.js; checkout.html, checkout.js, checkout.css (cache v2); tools/test/d1shim.mjs (runs migrations), e2e.py (new flow + member points), tools/dev-server.mjs (SEED_MEMBER); STATUS.md, HANDOFF.md.
+
+## v105 (sitegate pass, 26 Oct 2026)
+New: `404.html`, `tools/sitegate/` (sitegate.py, prelaunch_audit.py, mobile_check.py, sitegate.config.json, make-menu.mjs, run.sh, launch-checklist.json, README.md).
+Changed: index.html (preload phone intro painting, lazy Rewards images, site.css?v=128), about/catering/menu/privacy/rewards/terms.html (site.css?v=128; rewards skip link), checkout.html (meta description), site.css (v105 block: 16 px phone form fields), assets/swagramam-intro-portrait-720w.webp (re-encoded, same picture), .gitignore, STATUS.md, HANDOFF.md.
+Tests: 83 unit tests pass; e2e 57/57 (dev server with TEST_NOW_MS morning clock); page heights identical before/after on 8 pages at 390 and 1280 except catering at 390 (+9 px, larger fields); 0 JS errors.

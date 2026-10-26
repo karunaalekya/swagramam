@@ -1,0 +1,67 @@
+[
+  {
+    "id": "gsc_property",
+    "text": "Add the site to Google Search Console and verify ownership",
+    "done": false
+  },
+  {
+    "id": "gsc_sitemap",
+    "text": "Submit sitemap.xml in Search Console",
+    "done": false
+  },
+  {
+    "id": "gsc_indexing",
+    "text": "Request indexing for the key pages (Home, Menu, Banquets, Contact); re-check the Page indexing report after a few days",
+    "done": false
+  },
+  {
+    "id": "site_search",
+    "text": "Search site:yourdomain in Google and confirm the pages appear",
+    "done": false
+  },
+  {
+    "id": "analytics_live",
+    "text": "Open the site and confirm Analytics shows the visit in Realtime",
+    "done": false
+  },
+  {
+    "id": "gbp",
+    "text": "Claim and verify the Google Business Profile: same name, address and phone as the site, photos, menu link, hours, booking link",
+    "done": false
+  },
+  {
+    "id": "gsc_social",
+    "text": "Link the social profiles (Instagram, YouTube, etc.) in Search Console settings and keep them in the site's sameAs data",
+    "done": false
+  },
+  {
+    "id": "reviews",
+    "text": "Put a Google review link on the site, ask the first 20 guests for reviews, reply to every review",
+    "done": false
+  },
+  {
+    "id": "listings",
+    "text": "Create or verify listings with identical name, address, phone: Zomato, Swiggy, Justdial, TripAdvisor, Instagram bio link",
+    "done": false
+  },
+  {
+    "id": "backlinks",
+    "text": "Get 3 or more links from local food bloggers, event or wedding directories, partner venues",
+    "done": false
+  },
+  {
+    "id": "alerts",
+    "text": "Set Google Alerts for the brand name and signature dishes",
+    "done": false
+  },
+  {
+    "id": "content",
+    "text": "Publish the first posts (offer, event, menu update) on the site and the Business Profile",
+    "done": false
+  },
+  {
+    "id": "audit",
+    "text": "Run PageSpeed Insights and the Core Web Vitals report; fix anything red",
+    "done": false
+  }
+]

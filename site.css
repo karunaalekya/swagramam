@@ -3281,3 +3281,6 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
 
 /* ===== v104 intro loader removed (desktop and mobile) ===== */
 .sx-ld{display:none!important}
+
+/* ===== v105 sitegate: phone form fields at 16px so iPhones do not zoom in on focus ===== */
+@media(max-width:700px){input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}}
