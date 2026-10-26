@@ -1,2 +1,14 @@
 .DS_Store
 Thumbs.db
+
+# local secrets and tool output (never commit)
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler/
+node_modules/
+.audit-backup/
+mobile_shots/
+audit_report.md
+tools/sitegate/menu.json
+__pycache__/
