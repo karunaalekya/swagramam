@@ -39,6 +39,7 @@ Add secrets under Settings > Variables and Secrets. Then open `/api/admin/selfch
 | Item | Variables |
 |---|---|
 | Admin check | `ADMIN_KEY` (secret, any long text) |
+| Order Board | `BOARD_PIN` (secret, 6 to 12 digits). Staff open `https://YOUR-DOMAIN/board.html` on the counter phone or tablet and enter it. Without it the board answers "not switched on". Change it when a staff member leaves. |
 | PayU test | `PAYMENT_PROVIDER=payu`, `PAYU_ENV=test`, `PAYU_KEY`, `PAYU_SALT` (secrets). In the PayU dashboard set success and failure URL to `https://YOUR-DOMAIN/api/payu/callback`, webhook to `https://YOUR-DOMAIN/api/payu/webhook`. |
 | PayU live | replace the two secrets, `PAYU_ENV=live` |
 | SMS OTP (MSG91 + DLT) | `OTP_PROVIDER=msg91`, `MSG91_AUTHKEY` (secret), `MSG91_TEMPLATE_ID` (DLT-approved OTP template). Optional `MSG91_OTP_VAR` (template variable name, default `OTP`). Template must carry the 6-digit code variable. |

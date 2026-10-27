@@ -85,3 +85,8 @@ Changed: functions/_lib/orders.js, functions/api/quote.js, functions/api/menu.js
 New: `404.html`, `tools/sitegate/` (sitegate.py, prelaunch_audit.py, mobile_check.py, sitegate.config.json, make-menu.mjs, run.sh, launch-checklist.json, README.md).
 Changed: index.html (preload phone intro painting, lazy Rewards images, site.css?v=128), about/catering/menu/privacy/rewards/terms.html (site.css?v=128; rewards skip link), checkout.html (meta description), site.css (v105 block: 16 px phone form fields), assets/swagramam-intro-portrait-720w.webp (re-encoded, same picture), .gitignore, STATUS.md, HANDOFF.md.
 Tests: 83 unit tests pass; e2e 57/57 (dev server with TEST_NOW_MS morning clock); page heights identical before/after on 8 pages at 390 and 1280 except catering at 390 (+9 px, larger fields); 0 JS errors.
+
+## v106 (Phase 4 Order Board + WhatsApp catalogue, 27 Oct 2026)
+New: board.html, functions/_lib/board.js, functions/api/board/{login,logout,orders,action}.js, tools/test/board.test.mjs, tools/test/board-e2e.py, tools/wa-catalogue-images.py, docs/ORDER_BOARD_STAFF_GUIDE.md.
+Changed: tools/make-wa-catalogue.mjs (real fields), tools/dev-server.mjs (BOARD_PIN), functions/_lib/readiness.js and api/admin/selfcheck.js (BOARD_PIN), robots.txt, _headers, tools/sitegate/sitegate.config.json, CLOUDFLARE-SETUP.md, .dev.vars.example, STATUS.md, HANDOFF.md, docs plan tracker.
+Owner: set secret BOARD_PIN in Cloudflare (Production and Preview), open /board.html on the counter phone.

@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow"><meta name="theme-color" content="#103A27"><title>Order Board | Swagramam</title>
+<link rel="icon" href="favicon.ico"><link rel="preload" href="assets/fonts/dm-sans-var.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:100 1000;font-display:swap;src:url(assets/fonts/dm-sans-var.woff2) format('woff2')}
+@font-face{font-family:'DM Serif Display';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/dm-serif-normal.woff2) format('woff2')}
+:root{--g:#174A32;--dk:#103A27;--go:#F7B12E;--iv:#F8F4E8;--cr:#FFFDF6;--ink:#1d2b22;--soft:#5b6b60;--line:#e3dcc6;--red:#b3261e;--ok:#1f7a4d;--blue:#1d5fa8}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:16px/1.45 "DM Sans",system-ui,sans-serif;color:var(--ink);background:var(--iv);min-height:100vh}
+button{font:inherit;cursor:pointer}a{color:var(--g)}
+.hd{position:relative;z-index:5;background:var(--dk);color:#fff;padding:10px 14px calc(8px);display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.hd h1{font:400 22px/1 "DM Serif Display",Georgia,serif;color:var(--go);margin:0;flex:1;min-width:150px}
+.day{display:flex;align-items:center;gap:4px}.day button{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:10px;min-width:44px;min-height:44px;font-size:18px}
+.day b{min-width:118px;text-align:center;font-size:15px}
+.snd{border:2px solid var(--go);background:transparent;color:var(--go);border-radius:99px;padding:8px 14px;min-height:44px;font-weight:700}
+.snd.on{background:var(--go);color:var(--dk)}
+.out{background:transparent;border:0;color:#cfe1d6;min-height:44px;text-decoration:underline}
+.sum{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;background:var(--g);color:#fff;font-size:14px;scrollbar-width:none}
+.sum span{white-space:nowrap;background:rgba(255,255,255,.12);border-radius:99px;padding:6px 12px}.sum b{color:var(--go)}
+.tabs{display:flex;gap:6px;padding:10px 14px 0;position:sticky;top:0;z-index:4;background:var(--iv)}
+.tabs button{flex:1;border:2px solid var(--line);background:#fff;border-radius:12px 12px 0 0;min-height:48px;font-weight:700;color:var(--soft)}
+.tabs button[aria-selected=true]{border-color:var(--g);background:var(--g);color:#fff}
+.tabs i{font-style:normal;display:inline-block;min-width:24px;border-radius:99px;background:var(--go);color:var(--dk);padding:0 6px;margin-left:4px}
+.cols{display:grid;gap:12px;padding:12px 14px 40px}
+.col h2{display:none}
+.col[hidden]{display:none}
+.empty{color:var(--soft);text-align:center;padding:28px 10px;border:2px dashed var(--line);border-radius:14px}
+.card{background:#fff;border:1px solid var(--line);border-left:6px solid var(--go);border-radius:14px;padding:12px 14px;box-shadow:0 1px 3px rgba(16,58,39,.07);margin-bottom:12px}
+.card.new{animation:flash 1.2s ease 3}.card[data-col=preparing]{border-left-color:var(--blue)}.card[data-col=ready]{border-left-color:var(--ok)}.card[data-col=done]{border-left-color:#aab3ad;opacity:.85}
+@keyframes flash{50%{background:#fff3cf}}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.tm{font:700 26px/1 "DM Sans",sans-serif;letter-spacing:-.01em}.tm.late{color:var(--red)}.tm small{display:block;font-size:12px;font-weight:600;color:var(--soft);letter-spacing:0;margin-top:3px}
+.id{font:700 14px/1 ui-monospace,Menlo,monospace;background:var(--iv);border:1px dashed var(--g);border-radius:8px;padding:5px 8px}
+.who{margin:8px 0 4px;font-weight:700}.who a{font-weight:600;margin-left:6px}
+.pay{display:inline-block;border-radius:99px;padding:3px 10px;font-size:13px;font-weight:700;margin:2px 0 6px}
+.pay.on{background:#e3f3ea;color:var(--ok)}.pay.cod{background:#fff1d6;color:#7a4b00}.pay.done{background:#eceee9;color:var(--soft)}
+ul.its{list-style:none;margin:6px 0;padding:0;border-top:1px dashed var(--line)}
+ul.its li{padding:6px 0;border-bottom:1px dashed var(--line);font-size:17px}ul.its b{display:inline-block;min-width:34px}
+ul.its em{display:block;color:var(--red);font-style:normal;font-size:14px;margin-left:34px}
+.onote{background:#fff7e1;border-radius:10px;padding:6px 10px;margin:6px 0;font-size:15px}
+.meta{font-size:14px;color:var(--soft)}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.acts button{flex:1 1 130px;min-height:52px;border-radius:12px;border:0;font-weight:800;font-size:16px}
+.b-go{background:var(--g);color:#fff}.b-ready{background:var(--ok);color:#fff}.b-col{background:var(--go);color:var(--dk)}
+.b-no{background:#fff;border:2px solid var(--red)!important;color:var(--red)}.b-sec{background:#fff;border:2px solid var(--line)!important;color:var(--ink);flex:0 1 auto!important}
+.wa{display:block;text-align:center;margin-top:8px;background:#25D366;color:#073b1c;border-radius:12px;padding:12px;font-weight:800;text-decoration:none}
+.st{font-weight:700;font-size:14px}.st.bad{color:var(--red)}
+.login{max-width:380px;margin:12vh auto;background:#fff;border-radius:18px;padding:24px;box-shadow:0 8px 30px rgba(16,58,39,.12);text-align:center}
+.login h1{font:400 30px/1.1 "DM Serif Display",Georgia,serif;color:var(--g);margin:0 0 6px}
+.login input{width:100%;font-size:28px;letter-spacing:.3em;text-align:center;padding:12px;border:2px solid var(--line);border-radius:12px;margin:14px 0 8px}
+.login button{width:100%;min-height:52px;border:0;border-radius:12px;background:var(--g);color:#fff;font-weight:800;font-size:17px}
+.err{color:var(--red);font-weight:600;min-height:22px}
+dialog{border:0;border-radius:16px;max-width:420px;width:calc(100% - 28px);padding:18px}dialog::backdrop{background:rgba(16,58,39,.5)}
+dialog h2{margin:0 0 10px;font:400 22px "DM Serif Display",Georgia,serif;color:var(--g)}
+.rs{display:grid;gap:8px}.rs button{min-height:48px;border-radius:12px;border:2px solid var(--line);background:#fff;font-weight:700;text-align:left;padding:8px 12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--dk);color:#fff;padding:12px 16px;border-radius:12px;max-width:calc(100% - 28px);z-index:20;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#ticket{display:none}
+@media (min-width:1000px){.tabs{display:none}.cols{grid-template-columns:repeat(4,minmax(0,1fr));align-items:start}.col[hidden]{display:block}.col h2{display:block;font:700 15px "DM Sans";text-transform:uppercase;letter-spacing:.08em;color:var(--soft);margin:0 0 8px}.hd{position:sticky;top:0}}
+@media print{body>*:not(#ticket){display:none!important}#ticket{display:block;width:72mm;font:12px/1.35 ui-monospace,Menlo,monospace;color:#000}#ticket h3{font-size:16px;margin:0 0 4px;text-align:center}#ticket hr{border:0;border-top:1px dashed #000}@page{size:80mm auto;margin:3mm}}
+@media (prefers-reduced-motion:reduce){.card.new{animation:none}}
+</style></head>
+<body>
+<div id="app"><p style="padding:30px;text-align:center">Loading the order board&hellip;</p></div>
+<dialog id="dlg" aria-labelledby="dlg-t"></dialog>
+<div id="ticket" aria-hidden="true"></div>
+<script>
+(function () {
+'use strict';
+var $ = function (s, r) { return (r || document).querySelector(s); };
+var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+var rs = function (m) { return 'Rs ' + (m / 100).toFixed(2).replace(/\.00$/, ''); };
+var istToday = function () { return new Date(Date.now() + 330 * 60000).toISOString().slice(0, 10); };
+var S = { date: istToday(), data: null, tab: 'new', seen: null, sound: false, busy: {}, wa: {}, timer: 0 };
+var COLS = [['new', 'New'], ['preparing', 'Preparing'], ['ready', 'Ready'], ['done', 'Done']];
+var STATE = { SENT_TO_KITCHEN: 'New', HANDOFF_FAILED: 'New (check)', PAID: 'New', CONFIRMED: 'Preparing', READY: 'Ready for pickup', COMPLETED: 'Collected', NO_SHOW: 'No-show', CANCELLED: 'Cancelled', REFUND_NEEDED: 'Refund needed (owner)' };
+
+function api(path, body) {
+  return fetch('/api/board/' + path, { method: body ? 'POST' : 'GET', headers: body ? { 'content-type': 'application/json', 'x-board': '1' } : {}, body: body ? JSON.stringify(body) : undefined, credentials: 'same-origin' })
+    .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._s = r.status; return j; }); }, function () { return { _s: 0, message: 'No connection. Retrying…' }; });
+}
+function toast(m) { var t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = m; document.body.appendChild(t); setTimeout(function () { t.remove(); }, 3500); }
+
+/* ---- login ---- */
+function loginView(msg) {
+  clearInterval(S.timer);
+  $('#app').innerHTML = '<form class="login" id="lf"><h1>Order Board</h1><p>Swagramam staff only. Enter the PIN.</p><label for="pin" class="sr">PIN</label>' +
+    '<input id="pin" type="password" inputmode="numeric" autocomplete="current-password" maxlength="12" aria-label="PIN"><p class="err" id="lerr" role="alert">' + esc(msg || '') + '</p><button type="submit">Open the board</button></form>';
+  $('#pin').focus();
+}
+document.addEventListener('submit', function (e) {
+  if (e.target.id !== 'lf') return; e.preventDefault();
+  api('login', { pin: $('#pin').value.trim() }).then(function (j) { if (j.ok) { S.seen = null; boot(); } else { $('#lerr').textContent = j.message || 'Could not log in.'; $('#pin').value = ''; $('#pin').focus(); } });
+});
+
+/* ---- sound and alerts (a tap is needed once: browsers block sound until then) ---- */
+var AC = null;
+function beep() {
+  if (!S.sound) return; try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); var t = AC.currentTime;
+    [0, .28, .56].forEach(function (d) { var o = AC.createOscillator(), g = AC.createGain(); o.type = 'sine'; o.frequency.value = d === .28 ? 1180 : 880; g.gain.setValueAtTime(.0001, t + d); g.gain.exponentialRampToValueAtTime(.6, t + d + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d + .24); o.connect(g); g.connect(AC.destination); o.start(t + d); o.stop(t + d + .25); });
+  } catch (e) {}
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+}
+
+/* ---- data ---- */
+function load() {
+  return api('orders?date=' + S.date).then(function (j) {
+    if (j._s === 401) return loginView('Your session ended. Enter the PIN again.');
+    if (j._s === 404) return ($('#app').innerHTML = '<div class="login"><h1>Order Board</h1><p>The board is not switched on yet (BOARD_PIN is not set in Cloudflare).</p></div>');
+    if (!j.ok) return toast(j.message || 'Could not refresh.');
+    var fresh = [];
+    if (S.date === istToday()) { var ids = j.orders.filter(function (o) { return o.column === 'new'; }).map(function (o) { return o.id; });
+      if (S.seen) fresh = ids.filter(function (id) { return !S.seen.has(id); }); S.seen = new Set((S.seen ? Array.from(S.seen) : []).concat(ids)); }
+    S.data = j; render(fresh);
+    if (fresh.length) { beep(); document.title = '(' + fresh.length + ') New order | Swagramam'; setTimeout(function () { document.title = 'Order Board | Swagramam'; }, 8000); }
+  });
+}
+function boot() {
+  $('#app').innerHTML = '<header class="hd"><h1>Order Board</h1><div class="day"><button type="button" data-day="-1" aria-label="Previous day">&lsaquo;</button><b id="dlab"></b><button type="button" data-day="1" aria-label="Next day">&rsaquo;</button></div>' +
+    '<button type="button" class="snd" id="snd" aria-pressed="false">&#128264; Tap to turn on sound</button><button type="button" class="out" data-out="1">Log out</button></header>' +
+    '<div class="sum" id="sum" aria-live="polite"></div><div class="tabs" role="tablist">' + COLS.map(function (c) { return '<button type="button" role="tab" data-tab="' + c[0] + '" aria-selected="' + (S.tab === c[0]) + '">' + c[1] + '<i id="n-' + c[0] + '">0</i></button>'; }).join('') + '</div>' +
+    '<main class="cols">' + COLS.map(function (c) { return '<section class="col" id="c-' + c[0] + '" aria-label="' + c[1] + '"' + (S.tab === c[0] ? '' : ' hidden') + '><h2>' + c[1] + '</h2><div></div></section>'; }).join('') + '</main>';
+  load(); clearInterval(S.timer); S.timer = setInterval(function () { if (!document.hidden) load(); }, 10000);
+}
+function label(d) { var t = istToday(), n = new Date(Date.parse(d + 'T00:00:00Z')); var s = n.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }); return d === t ? 'Today, ' + s : s; }
+function hhmm(t) { var h = +t.slice(0, 2), m = t.slice(3); return (h % 12 || 12) + ':' + m + (h >= 12 ? ' pm' : ' am'); }
+function late(o) { if (S.date !== istToday() || o.column === 'done' || o.column === 'ready') return false; var now = new Date(Date.now() + 330 * 60000).toISOString().slice(11, 16); return o.slot.time <= now; }
+
+function card(o, fresh) {
+  var c = o.column, cod = o.method === 'cod';
+  var pay = c === 'done' ? '<span class="pay done">' + esc(STATE[o.state] || o.state) + '</span>' : cod ? '<span class="pay cod">Collect ' + rs(o.totalMinor) + ' at the counter</span>' : '<span class="pay on">Paid online ' + rs(o.totalMinor) + '</span>';
+  var acts = '';
+  if (c === 'new') acts = '<button class="b-go" data-a="accept" data-id="' + o.id + '">Accept</button><button class="b-no" data-a="reject" data-id="' + o.id + '">Reject</button>';
+  if (c === 'preparing') acts = '<button class="b-ready" data-a="ready" data-id="' + o.id + '">Ready for pickup</button>';
+  if (c === 'ready') acts = '<button class="b-col" data-a="collected" data-id="' + o.id + '">' + (cod ? 'Collected and paid ' + rs(o.totalMinor) : 'Collected') + '</button><button class="b-no" data-a="noshow" data-id="' + o.id + '">No-show</button>';
+  if (c !== 'done') acts += '<button class="b-sec" data-a="print" data-id="' + o.id + '" aria-label="Print ticket for ' + o.id + '">&#128424; Print</button>';
+  return '<article class="card' + (fresh ? ' new' : '') + '" data-col="' + c + '" id="o-' + o.id + '"><div class="top"><div class="tm' + (late(o) ? ' late' : '') + '">' + hhmm(o.slot.time) + '<small>' + (o.slot.meal === 'l' ? 'Lunch' : 'Dinner') + ' pickup' + (late(o) ? ' &middot; LATE' : '') + '</small></div><span class="id">' + esc(o.id) + '</span></div>' +
+    '<div class="who">' + esc(o.name || 'Guest') + '<a href="tel:+91' + esc(o.phone) + '">+91 ' + esc(o.phone.slice(0, 5) + ' ' + o.phone.slice(5)) + '</a></div>' + pay +
+    (o.flag ? '<p class="st bad">&#9888; ' + esc(o.flag) + ': owner to check</p>' : '') +
+    '<ul class="its">' + o.items.map(function (i) { return '<li><b>' + i.qty + ' &times;</b>' + esc(i.name) + (i.note ? '<em>&#9998; ' + esc(i.note) + '</em>' : '') + '</li>'; }).join('') + '</ul>' +
+    (o.note ? '<div class="onote">&#128221; ' + esc(o.note) + '</div>' : '') +
+    '<div class="meta">' + [o.tipMinor ? 'Tip ' + rs(o.tipMinor) : '', o.discountMinor ? 'Discount ' + rs(o.discountMinor) + (o.couponCode ? ' (' + esc(o.couponCode) + ')' : '') : ''].filter(Boolean).join(' &middot; ') + '</div>' +
+    (S.wa[o.id] && c === 'ready' ? '<a class="wa" href="' + esc(S.wa[o.id]) + '" target="_blank" rel="noopener">Send WhatsApp: order ready</a>' : '') +
+    (acts ? '<div class="acts">' + acts + '</div>' : '') + '</article>';
+}
+function render(fresh) {
+  var d = S.data; if (!d || !$('#dlab')) return; $('#dlab').textContent = label(d.date);
+  var s = d.summary; $('#sum').innerHTML = '<span>Orders <b>' + s.orders + '</b></span><span>Collect at counter <b>' + rs(s.counterDueMinor) + '</b></span><span>Taken at counter <b>' + rs(s.counterTakenMinor) + '</b></span><span>Paid online <b>' + rs(s.onlineMinor) + '</b></span><span>Tips <b>' + rs(s.tipsMinor) + '</b></span><span>No-shows <b>' + s.noShows + '</b></span>' + (s.cancelled ? '<span>Cancelled <b>' + s.cancelled + '</b></span>' : '');
+  COLS.forEach(function (c) {
+    var list = d.orders.filter(function (o) { return o.column === c[0]; });
+    $('#n-' + c[0]).textContent = list.length;
+    $('#c-' + c[0] + ' > div').innerHTML = list.length ? list.map(function (o) { return card(o, fresh && fresh.indexOf(o.id) >= 0); }).join('') : '<p class="empty">' + (c[0] === 'new' ? 'No new orders. New ones appear here with a sound.' : 'Nothing here.') + '</p>';
+  });
+}
+
+/* ---- actions ---- */
+function act(id, action, reason) {
+  if (S.busy[id]) return; S.busy[id] = true;
+  api('action', { id: id, action: action, reason: reason }).then(function (j) {
+    S.busy[id] = false;
+    if (j._s === 401) return loginView('Your session ended. Enter the PIN again.');
+    if (!j.ok) { toast(j.message || 'That did not work. Try again.'); return load(); }
+    if (j.waLink) S.wa[id] = j.waLink;
+    toast({ accept: 'Accepted: start preparing ' + id, ready: 'Marked ready. Send the WhatsApp message to the customer.', collected: 'Collected' + (j.points ? ': ' + j.points + ' points added to the customer' : ''), noshow: 'Marked as no-show', reject: j.state === 'REFUND_NEEDED' ? 'Rejected. Paid online: the owner must refund it in PayU.' : 'Rejected and cancelled' }[action] || 'Done');
+    load();
+  });
+}
+function rejectDlg(id) {
+  var d = $('#dlg'), rs0 = (S.data && S.data.reasons) || ['Item not available', 'Other'];
+  d.innerHTML = '<h2 id="dlg-t">Reject ' + esc(id) + '?</h2><p>Choose a reason. The customer will be told.</p><div class="rs">' + rs0.map(function (r) { return '<button type="button" data-r="' + esc(r) + '">' + esc(r) + '</button>'; }).join('') + '</div><button type="button" class="b-sec" data-close="1" style="width:100%;margin-top:10px;min-height:48px;border-radius:12px">Keep the order</button>';
+  d.dataset.id = id; d.showModal();
+}
+function confirmDlg(id, action, text) {
+  var d = $('#dlg'); d.innerHTML = '<h2 id="dlg-t">' + esc(text) + '</h2><div class="acts"><button type="button" class="b-go" data-ok="' + action + '">Yes</button><button type="button" class="b-sec" data-close="1">No</button></div>'; d.dataset.id = id; d.showModal();
+}
+function printTicket(o) {
+  var t = $('#ticket');
+  t.innerHTML = '<h3>SWAGRAMAM</h3><div style="text-align:center">Take away &middot; Labbipet</div><hr><b>' + esc(o.id) + '</b><br>Pickup ' + hhmm(o.slot.time) + ', ' + esc(o.slot.date) + '<br>' + esc(o.name || 'Guest') + ' &middot; ' + esc(o.phone) +
+    '<hr>' + o.items.map(function (i) { return i.qty + ' x ' + esc(i.name) + (i.note ? '<br>&nbsp;&nbsp;* ' + esc(i.note) : ''); }).join('<br>') + (o.note ? '<hr>Note: ' + esc(o.note) : '') +
+    '<hr>' + (o.method === 'cod' ? 'TO COLLECT: ' + rs(o.totalMinor) : 'PAID ONLINE: ' + rs(o.totalMinor)) + '<hr><div style="text-align:center">Thank you!</div>';
+  window.print();
+}
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('button,a'); if (!b) return;
+  if (b.id === 'snd') { S.sound = !S.sound; b.classList.toggle('on', S.sound); b.setAttribute('aria-pressed', String(S.sound)); b.innerHTML = S.sound ? '&#128276; Sound on' : '&#128264; Tap to turn on sound'; if (S.sound) beep(); return; }
+  if (b.dataset.out) { api('logout', {}).then(function () { loginView(''); }); return; }
+  if (b.dataset.day) { var n = new Date(Date.parse(S.date + 'T00:00:00Z') + (+b.dataset.day) * 86400000); S.date = n.toISOString().slice(0, 10); S.data = null; load(); return; }
+  if (b.dataset.tab) { S.tab = b.dataset.tab; document.querySelectorAll('[data-tab]').forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); }); COLS.forEach(function (c) { $('#c-' + c[0]).hidden = c[0] !== S.tab; }); return; }
+  if (b.dataset.close) { $('#dlg').close(); return; }
+  if (b.dataset.r) { var id = $('#dlg').dataset.id; $('#dlg').close(); return act(id, 'reject', b.dataset.r); }
+  if (b.dataset.ok) { var id2 = $('#dlg').dataset.id; $('#dlg').close(); return act(id2, b.dataset.ok); }
+  var a = b.dataset.a, oid = b.dataset.id; if (!a) return;
+  var o = S.data && S.data.orders.filter(function (x) { return x.id === oid; })[0];
+  if (a === 'reject') return rejectDlg(oid);
+  if (a === 'print') return o && printTicket(o);
+  if (a === 'noshow') return confirmDlg(oid, 'noshow', 'Mark ' + oid + ' as no-show?');
+  if (a === 'collected' && o && o.method === 'cod') return confirmDlg(oid, 'collected', 'Collected ' + rs(o.totalMinor) + ' for ' + oid + '?');
+  act(oid, a);
+});
+document.addEventListener('visibilitychange', function () { if (!document.hidden && $('#dlab')) load(); });
+api('orders?date=' + S.date).then(function (j) { if (j._s === 401) return loginView(''); if (j._s === 404) return load(); boot(); });
+})();
+</script>
+</body></html>
