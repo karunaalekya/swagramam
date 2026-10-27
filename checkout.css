@@ -146,6 +146,7 @@ body{background:var(--iv)}
 .ck-btn{border-color:var(--g);color:var(--g)}.ck-btn.p{background:var(--go);border-color:var(--go);color:#1b1206;box-shadow:0 0 18px rgba(217,162,27,.4)}
 .ck-id .ck-two .ck-btn.p{background:var(--g);border-color:var(--g);color:#fff6e3;box-shadow:none}
 .ck-tm{background:#fff6e3;border:1px solid rgba(217,162,27,.4);border-radius:12px}
+.ck-sel{appearance:auto;font-weight:700;color:var(--g);background:#fff;cursor:pointer}
 .ck-chip{border-radius:10px}.ck-chip[aria-pressed=true]{background:var(--g);border-color:var(--g)}
 .ck-tab[aria-selected=true]{background:var(--g)}
 .ck-opt{border-radius:12px}.ck-opt:has(input:checked){border-color:var(--g);background:#edf5ee}

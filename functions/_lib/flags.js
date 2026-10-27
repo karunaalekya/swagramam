@@ -12,7 +12,7 @@ export function flags(env) {
     loyalty: String(env.LOYALTY_PROVIDER || "mock").toLowerCase(),   // mock | reelo
     gstConfirmed: on(env.GST_CONFIRMED, false),
     gstBp: +(env.GST_BP || 500),                        // 500 = 5.00%
-    prepMin: +(env.PREP_MIN || 25), slotMin: +(env.SLOT_MIN || 15), slotCap: +(env.SLOT_CAP || 8), days: +(env.ORDER_DAYS || 7),
+    prepMin: +(env.PREP_MIN || 25), slotMin: +(env.SLOT_MIN || 30), slotCap: +(env.SLOT_CAP || 8), days: +(env.ORDER_DAYS || 7),
     unpaidMin: +(env.UNPAID_TIMEOUT_MIN || 30), openCodCap: +(env.COD_OPEN_CAP || 2), noShowLimit: +(env.NOSHOW_LIMIT || 2),
   };
 }

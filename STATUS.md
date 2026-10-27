@@ -85,3 +85,6 @@ API: `/api/board/login`, `/logout`, `/orders?date=`, `/action` (needs header x-b
 **WhatsApp catalogue:** `node tools/make-wa-catalogue.mjs > whatsapp-catalogue.csv` then `python3 tools/wa-catalogue-images.py whatsapp-catalogue.csv wa-photos` (square 1024 px JPGs). 99 items; descriptions = the menu's own text plus facts (category, veg, lunch/dinner), nothing invented; 23 items have a photo, **76 need a real photo** before WhatsApp accepts them.
 **Tests:** 92 unit tests (9 new board), board browser test 29/29 at 390 and 1280 (`TEST_NOW_MS=<morning> BOARD_PIN=246810 node --no-warnings tools/dev-server.mjs 8787`, then `python3 tools/test/board-e2e.py`), checkout e2e 57/57.
 **NOT built / NOT tested:** automatic SMS "order ready" and owner SMS/WhatsApp alerts (need a DLT template or WhatsApp API: staff tap the WhatsApp link for now; alerts are written as events and handoff rows); daily summary message; real Cloudflare D1; a real counter phone or tablet; real thermal printer.
+
+## v107 pickup time dropdown (27 Oct 2026, owner request)
+Pickup time is now ONE dropdown of half-hour windows ("12:00 – 12:30 pm"), Lunch and Dinner groups, full windows disabled. No time chips. Server default `SLOT_MIN` is now 30 (set `SLOT_MIN=15` to go back); `/api/slots` returns `slotMin`. Cache checkout.js?v=10, checkout.css?v=11. Tests: 92 unit, checkout e2e 63/63.

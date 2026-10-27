@@ -46,7 +46,7 @@ requote.n = 0;
 var qTimer; function requoteSoon() { clearTimeout(qTimer); qTimer = setTimeout(function () { requote(render); }, 450); }
 
 /* ---------- slots ---------- */
-function loadSlots(date, cb) { S.date = date; S.time = null; S.slots = []; api("/api/slots?date=" + date).then(function (j) { S.slots = j.ok ? j.slots : []; if (j.ok) { S.today = j.today; S.days = j.days; } cb && cb(); }); }
+function loadSlots(date, cb) { S.date = date; S.time = null; S.slots = []; api("/api/slots?date=" + date).then(function (j) { S.slots = j.ok ? j.slots : []; if (j.ok) { S.today = j.today; S.days = j.days; S.slotMin = j.slotMin || 30; } cb && cb(); }); }
 function dateList() { var out = [], p = S.today.split("-"), b = Date.UTC(+p[0], +p[1] - 1, +p[2]); for (var i = 0; i < 1; i++) {   /* takeaway: today only */ var d = new Date(b + i * 86400000); out.push(d.getUTCFullYear() + "-" + String(d.getUTCMonth() + 1).padStart(2, "0") + "-" + String(d.getUTCDate()).padStart(2, "0")); } return out; }
 
 /* ---------- view pieces ---------- */
@@ -128,18 +128,24 @@ function secRedeem() {
   return h + '<p class="ck-note">One offer per order. <a href="rewards.html">How rewards work</a></p></section>';
 }
 function secTime() {
-  var open = S.picker, free = S.slots.filter(function (x) { return !x.full; }), meal = S.tabMeal || (S.time && (S.slots.filter(function (x) { return x.time === S.time; })[0] || {}).meal) || (free[0] && free[0].meal) || "l";
-  var h = '<div class="ck-tm"><div class="ck-kv"><div><small>Pickup today</small><b id="ck-when">' + (S.time ? t12(S.time) + " &middot; ready in about 25 min" : "Choose a pickup time") + '</b></div><button type="button" class="ck-btn sm" data-act="chg" aria-expanded="' + open + '">' + (open ? "Done" : "Change") + "</button></div>";
-  if (!S.slots.length) h += '<p class="ck-note">No pickup times left today. Please order on WhatsApp or come back tomorrow.</p>';
-  if (open && S.slots.length) {
-    var ms = ["l", "d"].filter(function (m) { return S.slots.some(function (x) { return x.meal === m; }); });
-    if (ms.length > 1) { h += '<div class="ck-tabs" role="tablist">'; ms.forEach(function (m) { h += '<button type="button" role="tab" class="ck-tab" data-meal="' + m + '" aria-selected="' + (m === meal) + '">' + (m === "l" ? "Lunch" : "Dinner") + "</button>"; }); h += "</div>"; }
-    h += '<div class="ck-times ck-scroll" role="group" aria-label="Pickup time today">';
-    S.slots.filter(function (x) { return x.meal === meal; }).forEach(function (x) { h += '<button type="button" class="ck-chip" data-time="' + x.time + '"' + (x.full ? " disabled" : "") + ' aria-pressed="' + (x.time === S.time) + '">' + t12(x.time) + "</button>"; });
-    h += "</div>";
-  }
+  // One dropdown of half-hour pickup windows (owner, 27 Oct). Lunch and dinner are groups inside the same list.
+  var day = S.date && S.today && S.date !== S.today ? "Pickup " + dayName(S.date) : "Pickup today";
+  var h = '<div class="ck-tm"><label class="ck-f" for="ck-slot" style="margin-top:0">' + day + '</label>';
+  if (!S.slots.length) return h + '<p class="ck-note">No pickup times left today. Please order on WhatsApp or come back tomorrow.</p></div>';
+  h += '<select id="ck-slot" class="ck-in ck-sel"><option value="">Choose a pickup time</option>';
+  ["l", "d"].forEach(function (m) {
+    var list = S.slots.filter(function (x) { return x.meal === m; }); if (!list.length) return;
+    h += '<optgroup label="' + (m === "l" ? "Lunch" : "Dinner") + '">';
+    list.forEach(function (x) { h += '<option value="' + x.time + '"' + (x.time === S.time ? " selected" : "") + (x.full ? " disabled" : "") + ">" + win(x.time) + (x.full ? " (full)" : "") + "</option>"; });
+    h += "</optgroup>";
+  });
+  h += "</select>";
+  if (S.time) h += '<p class="ck-note" id="ck-when" style="margin:6px 0 0">Ready for pickup: <b>' + win(S.time) + "</b></p>";
   return h + "</div>";
 }
+function win(t) { var m = +t.slice(0, 2) * 60 + +t.slice(3) + (S.slotMin || 30), e = String(Math.floor(m / 60) % 24).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"), a = t12(t), z = t12(e);
+  return (a.slice(-2) === z.slice(-2) ? a.slice(0, -3) : a) + " \u2013 " + z; }
+function dayName(d) { var x = new Date(d + "T00:00:00Z"); return (S.today && Date.parse(d) - Date.parse(S.today) === 86400000 ? "tomorrow, " : "") + x.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" }); }
 function secSummary() {
   var q = S.q, ok = q && q.ok, h = '<section class="ck-c" id="s-pay" aria-labelledby="h-pay"><h2 id="h-pay">Payment summary</h2>';
   h += secTime();
@@ -207,6 +213,7 @@ function onClick(e) {
 function onInput(e) {
   var t = e.target;
   if (t.classList.contains("ck-ob")) return otpBox(t);
+  if (t.id === "ck-slot") { if (e.type !== "change") return; S.time = t.value || null; render(); return requote(render); }
   if (t.id === "ck-ph") S.phone = t.value.replace(/[^\d+ ]/g, ""); else if (t.id === "ck-note") S.note = t.value; else if (t.id === "ck-nm") S.name = t.value; else if (t.id === "ck-em") S.email = t.value;
   else if (t.id === "ck-terms") S.terms = t.checked; else if (t.id === "ck-mkt") S.mkt = t.checked;
   else if (t.id === "ck-join") { S.join = t.checked; requote(render); }
@@ -444,7 +451,7 @@ function start() {
     api("/api/slots").then(function (s) {
       if (!s.ok) return unavailable(); S.today = s.today; S.days = s.days;
       var ds = dateList();
-      function pick(k) { if (k >= ds.length) { loadSlots(s.date, go); return; } api("/api/slots?date=" + ds[k]).then(function (r) { if (r.ok && r.slots.length) { S.date = ds[k]; S.slots = r.slots; go(); } else pick(k + 1); }); }
+      function pick(k) { if (k >= ds.length) { loadSlots(s.date, go); return; } api("/api/slots?date=" + ds[k]).then(function (r) { if (r.ok && r.slots.length) { S.date = ds[k]; S.slots = r.slots; S.slotMin = r.slotMin || 30; if (r.today) S.today = r.today; go(); } else pick(k + 1); }); }
       function go() { restore.then(function () { if (!S.time) { var f0 = S.slots.filter(function (x) { return !x.full; })[0]; if (f0) S.time = f0.time; } var fx = S.rwFresh; render(); rwFx(); requote(function () { if (fx) setTimeout(render, 1600); else render(); }); }); }
       pick(0);
     });
