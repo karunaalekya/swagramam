@@ -1,0 +1,1 @@
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href*="wa.me"]');if(a&&window.gtag)gtag('event','whatsapp_click',{link_url:a.href,page:location.pathname});});
