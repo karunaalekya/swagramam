@@ -153,7 +153,8 @@ box-shadow:0 0 calc(var(--s)*3) calc(var(--s)*.5) var(--gold);opacity:0;animatio
 
 /* ===== sequence (all driven off #sx.go) ===== */
 #sx.go .sx-art{animation:sx-cam 10.5s .2s cubic-bezier(.35,0,.2,1) both}
-#sx.go .sx-sk{animation:sx-sk 3.2s var(--t-sk) cubic-bezier(.5,0,.3,1) both}
+#sx.go /* intro-fix: the sketch is there from the first frame (no cream wipe) */
+.sx-sk{-webkit-mask:none;mask:none;animation:none}
 #sx.go .sx-bl{animation:sx-bl 2.4s var(--t) cubic-bezier(.4,0,.2,1) both}
 #sx.np.go .sx-bl{animation:sx-vis 1.6s var(--t) ease both}
 #sx.go .sx-fc{animation:sx-vis 1.4s 7.2s ease forwards}
@@ -3284,3 +3285,12 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
 
 /* ===== v105 sitegate: phone form fields at 16px so iPhones do not zoom in on focus ===== */
 @media(max-width:700px){input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}}
+
+/* ===== intro-fix: hanging boards bigger, brighter lettering ===== */
+.sx-sn .sxbg{transform-origin:0 0;scale:1.2}
+@media(max-width:700px){.sx-sn .sxbg{scale:1.55}}
+.sx-sn .sxmb{border-color:#F3C762;background:repeating-linear-gradient(92deg,rgba(0,0,0,.06) 0 .15em,transparent .15em .55em),linear-gradient(180deg,#9a5522,#63310f)}
+.sx-sn .sxmb b{font-size:1.44em;color:#FFF3CC;text-shadow:0 .07em 0 #2a1000,0 0 .5em rgba(0,0,0,.55)}
+.sx-sn .sxmb span{font-size:.8em;color:#FFE7A3;text-shadow:0 .08em 0 #2a1000,0 0 .4em rgba(0,0,0,.5)}
+.sx-sn .sxsb{font-size:.98em;font-weight:800;text-shadow:0 .07em 0 #2a1000,0 0 .4em rgba(0,0,0,.5);background:linear-gradient(180deg,#8a4a1b,#57290c)}
+.sx-sn .sxsb[lang=ta]{font-size:.9em}
