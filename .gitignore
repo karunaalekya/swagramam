@@ -12,3 +12,4 @@ mobile_shots/
 audit_report.md
 tools/sitegate/menu.json
 __pycache__/
+*.zip
