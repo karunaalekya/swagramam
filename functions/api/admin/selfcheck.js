@@ -10,5 +10,5 @@ export async function onRequestGet({ env, request }) {
     present: { TOKEN_SECRET: has("TOKEN_SECRET"), PAYU_KEY: has("PAYU_KEY"), PAYU_SALT: has("PAYU_SALT"), PAYU_ENV: env.PAYU_ENV || null,
       MSG91_AUTHKEY: has("MSG91_AUTHKEY"), MSG91_TEMPLATE_ID: has("MSG91_TEMPLATE_ID"),
       REELO_BASE_URL: has("REELO_BASE_URL"), REELO_VENDOR_ID: has("REELO_VENDOR_ID"), REELO_MERCHANT_ID: has("REELO_MERCHANT_ID"), REELO_CUSTOMER_KEY: has("REELO_CUSTOMER_KEY"), REELO_CAPTURE: env.REELO_CAPTURE || "off",
-      DB: has("DB"), KV: has("KV"), ADMIN_KEY: has("ADMIN_KEY"), OFFERS_JSON: has("OFFERS_JSON") }, warnings: warnings(env), readiness: readiness(env) });
+      DB: has("DB"), KV: has("KV"), ADMIN_KEY: has("ADMIN_KEY"), BOARD_PIN: has("BOARD_PIN"), OFFERS_JSON: has("OFFERS_JSON") }, warnings: warnings(env), readiness: readiness(env) });
 }

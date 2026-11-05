@@ -6,7 +6,7 @@
 | 1 Checkout rebuild (mock) | DONE and tested. Tip card and summary now follow the Biryanis screenshots (chips 5/10/15/Other, 5% preselected with X, tip amount and GST amount lines, points earning row) |
 | 2 Loyalty redemption | MOCK DONE (coupon, freebie, points, reserve/commit/release, expiry, 55 unit tests). Reelo part BLOCKED on answers |
 | 3 Real OTP and PayU test | NOT STARTED. Needs MSG91 key and DLT template, PayU test key and salt |
-| 4 Order Board, counter flow, alerts | NOT STARTED |
+| 4 Order Board, counter flow, alerts | BUILT on mock 27 Oct (board.html, staff PIN). Automatic SMS and owner alerts wait for DLT / WhatsApp API |
 | 5 Go live and harden | NOT STARTED |
 
 ## Payment rule (built, tested)

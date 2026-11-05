@@ -61,13 +61,15 @@ test("production refuses mock OTP and mock gateway", async () => {
   const s = await call(env, sendR, "/api/otp/send", { phone: "9000000001" }); assert.equal(s.s, 503);
   assert.equal((await mockR.onRequestGet({ env })).status, 404);
 });
-test("slots: windows, Monday lunch end, prep time, today filter", async () => {
-  const env = env0(); const d = await get(env, slotsR, "/api/slots?date=2026-10-21"); const times = d.j.slots.map(s => s.time);
-  assert.equal(times[0], "12:00"); assert.ok(times.includes("16:15") && !times.includes("16:30")); assert.ok(times.includes("19:00") && times.includes("23:15") && !times.includes("23:30"));
-  const mon = await get(env, slotsR, "/api/slots?date=2026-10-26"); const mt = mon.j.slots.map(s => s.time); assert.ok(mt.includes("15:45") && !mt.includes("16:00"));   // Monday lunch ends 16:00
-  const late = makeEnv({ TEST_NOW_MS: String(Date.parse("2026-10-21T07:50:00Z")) }); // 13:20 IST -> earliest 13:45+ (25 min prep, 15 min grid)
-  const l = (await get(late, slotsR, "/api/slots?date=2026-10-21")).j.slots.map(s => s.time); assert.equal(l[0], "13:45");
+test("slots: half-hour windows (default), Monday lunch end, prep time, today filter, SLOT_MIN override", async () => {
+  const env = env0(); const d = await get(env, slotsR, "/api/slots?date=2026-10-21"); const times = d.j.slots.map(s => s.time); assert.equal(d.j.slotMin, 30);
+  assert.equal(times[0], "12:00"); assert.ok(times.includes("16:00") && !times.includes("16:15") && !times.includes("16:30")); assert.ok(times.includes("19:00") && times.includes("23:00") && !times.includes("23:30"));
+  assert.ok(times.every(x => x.endsWith(":00") || x.endsWith(":30")), "only half-hour starts");
+  const mon = await get(env, slotsR, "/api/slots?date=2026-10-26"); const mt = mon.j.slots.map(s => s.time); assert.ok(mt.includes("15:30") && !mt.includes("16:00"));   // Monday lunch ends 16:00: last window 3:30-4:00
+  const late = makeEnv({ TEST_NOW_MS: String(Date.parse("2026-10-21T07:50:00Z")) }); // 13:20 IST -> 13:45 with 25 min prep -> next half hour 14:00
+  const l = (await get(late, slotsR, "/api/slots?date=2026-10-21")).j.slots.map(s => s.time); assert.equal(l[0], "14:00");
   assert.equal((await get(env, slotsR, "/api/slots?date=2026-10-20")).j.slots.length, 0); assert.equal((await get(env, slotsR, "/api/slots?date=2026-11-05")).j.slots.length, 0);
+  const q15 = env0({ SLOT_MIN: "15" }); assert.ok((await get(q15, slotsR, "/api/slots?date=2026-10-21")).j.slots.some(s => s.time === "12:15"), "SLOT_MIN=15 still works");
 });
 test("quote: server prices, GST, points, tampering ignored", async () => {
   const env = env0(); const q = await call(env, quoteR, "/api/quote", { lines: [thali(), { ...soup(), qty: 2, priceMinor: 1 }], slot: lunchSlot });

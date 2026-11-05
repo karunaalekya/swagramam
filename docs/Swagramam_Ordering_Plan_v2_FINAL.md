@@ -124,4 +124,4 @@ Accept: all items ticked and a real order handled start to finish. Soft launch t
 - Phase 5: "... Do Phase 5 only (go-live checklist)."
 
 ## H. Progress tracker (tick and date)
-- [ ] Phase 0   - [x] Phase 1 (23 Oct 2026, mock)   - [~] Phase 2 (mock complete 23 Oct 2026, Reelo pending)   - [ ] Phase 3   - [ ] Phase 4   - [ ] Phase 5
+- [ ] Phase 0   - [x] Phase 1 (23 Oct 2026, mock)   - [~] Phase 2 (mock complete 23 Oct 2026, Reelo pending)   - [ ] Phase 3   - [x] Phase 4 (27 Oct 2026, mock; SMS alerts need DLT)   - [ ] Phase 5

@@ -18,7 +18,7 @@
   "profile": "restaurant",
   "required_pages": ["/", "/about", "/menu", "/rewards", "/catering", "/privacy", "/terms"],
   "required_assets": [],
-  "noindex_pages": ["/checkout.html"],
+  "noindex_pages": ["/checkout.html", "/board.html"],
   "mobile_ignore": ["/api/"],
   "socials": {"instagram": ["swagramam_"], "facebook": ["61570696611211"]},
   "analytics": true,

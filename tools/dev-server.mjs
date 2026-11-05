@@ -1,7 +1,7 @@
 // Local test server: serves the site and runs functions/api/* on an in-memory database. Run: node --no-warnings tools/dev-server.mjs [port]
 import http from "node:http"; import fs from "node:fs"; import path from "node:path"; import { makeEnv } from "./test/d1shim.mjs";
 const root = path.resolve(new URL("..", import.meta.url).pathname), port = +process.argv[2] || 8787;
-const env = makeEnv({ TEST_NOW_MS: process.env.TEST_NOW_MS || "" }); if (!process.env.TEST_NOW_MS) delete env.TEST_NOW_MS; if (process.env.ADMIN_KEY) env.ADMIN_KEY = process.env.ADMIN_KEY;
+const env = makeEnv({ TEST_NOW_MS: process.env.TEST_NOW_MS || "" }); if (!process.env.TEST_NOW_MS) delete env.TEST_NOW_MS; if (process.env.ADMIN_KEY) env.ADMIN_KEY = process.env.ADMIN_KEY; if (process.env.BOARD_PIN) env.BOARD_PIN = process.env.BOARD_PIN;
 // Demo member for browser tests: SEED_MEMBER=9876500022:1000 (phone:points)
 if (process.env.SEED_MEMBER) { const [ph, pt] = process.env.SEED_MEMBER.split(":"); env.raw.prepare("INSERT OR REPLACE INTO customers(phone,name,member,points,created_at,updated_at) VALUES(?,?,1,?,0,0)").run(ph, "Demo Member", +pt || 0); }
 const routes = new Map();

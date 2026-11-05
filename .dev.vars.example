@@ -2,6 +2,8 @@
 # --- Phase 0 (infra) ---
 TOKEN_SECRET=
 ADMIN_KEY=
+# --- Phase 4 (Order Board, /board.html) ---
+BOARD_PIN=
 ONLINE_ORDER_LIVE=off
 # --- Phase 3 (real OTP and PayU test) ---
 # OTP_PROVIDER=msg91

@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /checkout.html
+Disallow: /board.html
 Disallow: /api/
 
 Sitemap: https://swagramam.in/sitemap.xml

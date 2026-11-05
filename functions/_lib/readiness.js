@@ -11,6 +11,7 @@ export function readiness(env) {
   const live = [];
   if (!f.prod) live.push("ENV=production"); if (!f.live) live.push("ONLINE_ORDER_LIVE=on"); if (f.payment !== "payu") live.push("PAYMENT_PROVIDER=payu"); if (f.otp !== "msg91") live.push("OTP_PROVIDER=msg91");
   if (env.PAYU_ENV !== "live") live.push("PAYU_ENV=live"); if (!f.gstConfirmed) live.push("GST_CONFIRMED=true (after owner and accountant confirm)"); if (!f.codLive) live.push("COD_LIVE=on (only if pay at pickup is wanted)");
+  if (!/^\d{6,12}$/.test(String(env.BOARD_PIN || ""))) live.push("BOARD_PIN (6 to 12 digits) so the kitchen can see orders on /board.html");
   if (f.loyalty === "mock") live.push("LOYALTY_PROVIDER=reelo (or accept that offers are mock)"); if (O.error) live.push(O.error);
   return { infra: item(!infra.length, infra), payu: item(!payu.length, payu, "Phase 3 and 5"), msg91: item(!msg.length, msg, "Phase 3"), reelo: item(!reelo.length, reelo, "Phase 2"), offersConfig: item(!O.error, O.error ? ["OFFERS_JSON"] : [], env.OFFERS_JSON ? "custom offers in use" : "default mock offers in use"), goLiveBlockers: live };
 }
