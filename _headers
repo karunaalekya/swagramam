@@ -8,3 +8,49 @@
 /board.html
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store
+/checkout
+  X-Robots-Tag: noindex, nofollow
+/board
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+
+# fonts never change: cache for a year
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+# css and js are versioned with ?v=N in the pages, so a year is safe (bump N when a file changes)
+/site.css
+  Cache-Control: public, max-age=31536000, immutable
+/fx.js
+  Cache-Control: public, max-age=31536000, immutable
+/order.js
+  Cache-Control: public, max-age=31536000, immutable
+/order-data.js
+  Cache-Control: public, max-age=31536000, immutable
+/checkout.js
+  Cache-Control: public, max-age=31536000, immutable
+/checkout.css
+  Cache-Control: public, max-age=31536000, immutable
+/assets/css/*
+  Cache-Control: public, max-age=31536000, immutable
+/assets/js/*
+  Cache-Control: public, max-age=31536000, immutable
+# images and audio keep their names when recompressed: a week, then refresh quietly
+# (one rule per type: overlapping rules would join their Cache-Control values)
+/assets/*.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/assets/*.mp4
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/assets/*.mp3
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/assets/*.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/assets/*.jpg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/assets/*.svg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+# keep preview and pages.dev addresses out of Google (swagramam.in is the real address)
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
