@@ -1,98 +1,145 @@
-/* Catering hero: wash reveal, parallax, golden dust, occasion focus chips */
+/* Catering enquiry: validation, email POST + WhatsApp hand-off, success state, tracking, sticky quote bar */
 (function () {
-  var root = document.getElementById('catering-wow');
-  if (!root) return;
+  'use strict';
+  var card = document.getElementById('cq');
+  var form = card && card.querySelector('form.ch-form');
+  if (!form) return;
+
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var img = root.querySelector('.cw-img');
-  var stage = root.querySelector('.cw-stage');
-  var canvas = root.querySelector('.cw-dust');
-  var chips = root.querySelectorAll('.cw-chip');
-  var isPhone = function () { return window.matchMedia('(max-width: 760px)').matches; };
+  var ok = card.querySelector('.ch-ok');
+  var btn = form.querySelector('.ch-btn');
+  var $ = function (n) { return form.elements[n]; };
+  var errEl = function (n) { return document.getElementById('e-' + n); };
 
-  root.classList.add('js');
+  /* date: no past days */
+  var d = new Date(), pad = function (x) { return (x < 10 ? '0' : '') + x; };
+  var today = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  $('Date').min = today;
 
-  /* 1. reveal once the artwork is decoded, so the wash never plays on an empty frame */
-  function start() {
-    if (root.classList.contains('is-in')) return;
-    root.classList.add('is-in');
-    setTimeout(function () { root.classList.add('is-done'); }, reduce ? 0 : 2600);
+  /* optional venue field */
+  var more = form.querySelector('.ch-more'), venue = document.getElementById('ch-venue');
+  more.addEventListener('click', function () {
+    var open = venue.hidden;
+    venue.hidden = !open;
+    more.setAttribute('aria-expanded', String(open));
+    more.textContent = open ? '\u2212 Hide venue' : '+ Add venue (optional)';
+    if (open) $('Venue').focus();
+  });
+
+  /* ---- validation ---- */
+  function cleanPhone(v) {
+    var n = String(v || '').replace(/\D/g, '');
+    if (n.length === 12 && n.indexOf('91') === 0) n = n.slice(2);
+    else if (n.length === 11 && n.charAt(0) === '0') n = n.slice(1);
+    return n;
   }
-  var io = new IntersectionObserver(function (e) {
-    if (e[0].isIntersecting) { (img.decode ? img.decode().catch(function () {}) : Promise.resolve()).then(start); io.disconnect(); }
-  }, { threshold: 0.15 });
-  io.observe(root);
-
-  /* 2. occasion chips: glide into that part of the artwork (zoom on desktop, pan on phone) */
-  var focus = [
-    { x: 12, label: 'wedding' }, { x: 38, label: 'feast' },
-    { x: 60, label: 'birthday' }, { x: 86, label: 'corporate' }
-  ];
-  function setFocus(i) {
-    var on = chips[i].getAttribute('aria-pressed') !== 'true';
-    chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
-    root.classList.remove('is-zoom');
-    if (!on) { img.style.objectPosition = ''; return; }
-    chips[i].setAttribute('aria-pressed', 'true');
-    if (isPhone() && !root.classList.contains('has-mobile')) {
-      img.style.animation = 'none';
-      img.style.objectPosition = focus[i].x + '% 50%';
-      img.style.transition = 'object-position 1s cubic-bezier(.22,.8,.2,1)';
-    } else if (!isPhone()) {
-      root.style.setProperty('--cw-ox', focus[i].x + '%');
-      root.style.setProperty('--cw-oy', '45%');
-      root.style.setProperty('--cw-lx', focus[i].x + '%');
-      root.classList.add('is-zoom');
+  var rules = {
+    Name: function (v) { return v.trim().length < 2 ? 'Please enter your name.' : ''; },
+    Phone: function (v) {
+      if (!v.trim()) return 'Please enter your mobile number.';
+      return /^[6-9]\d{9}$/.test(cleanPhone(v)) ? '' : 'Enter a valid 10-digit Indian mobile number.';
+    },
+    Date: function (v) { return v && v < today ? 'Please pick today or a later date.' : ''; },
+    Guests: function (v) {
+      if (!v) return '';
+      var n = Number(v);
+      return (n >= 1 && n <= 10000 && Math.floor(n) === n) ? '' : 'Enter a number of guests, like 150.';
     }
+  };
+  function check(name) {
+    var f = $(name), msg = rules[name](f.value), e = errEl(name);
+    e.textContent = msg;
+    f.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    return !msg;
   }
-  chips.forEach(function (c, i) { c.addEventListener('click', function () { setFocus(i); }); });
+  Object.keys(rules).forEach(function (n) {
+    var f = $(n);
+    f.addEventListener('blur', function () { if (f.value || f.getAttribute('aria-invalid') === 'true') check(n); });
+    f.addEventListener('input', function () { if (f.getAttribute('aria-invalid') === 'true') check(n); });
+  });
 
-  if (reduce) return;
-
-  /* 3. gentle parallax from pointer (desktop) */
-  if (window.matchMedia('(hover:hover)').matches) {
-    stage.addEventListener('pointermove', function (e) {
-      if (root.classList.contains('is-zoom')) return;
-      var r = stage.getBoundingClientRect();
-      root.style.setProperty('--cw-px', ((e.clientX - r.left) / r.width - 0.5) * -14 + 'px');
-      root.style.setProperty('--cw-py', ((e.clientY - r.top) / r.height - 0.5) * -8 + 'px');
-      root.style.setProperty('--cw-lx', ((e.clientX - r.left) / r.width) * 100 + '%');
+  /* ---- submit ---- */
+  function collect() {
+    var data = {};
+    ['Name', 'Phone', 'Event', 'Date', 'Guests', 'Venue', 'Notes'].forEach(function (n) {
+      var el = $(n), v = '';
+      if (n === 'Event') v = (form.querySelector('input[name="Event"]:checked') || {}).value || '';
+      else v = el.value.trim();
+      if (n === 'Phone') v = cleanPhone(v);
+      if (v) data[n] = v;
     });
-    stage.addEventListener('pointerleave', function () {
-      root.style.setProperty('--cw-px', '0px'); root.style.setProperty('--cw-py', '0px');
-    });
+    return data;
+  }
+  function waUrl(data) {
+    var lines = Object.keys(data).map(function (k) { return k + ': ' + (k === 'Phone' ? '+91 ' + data[k] : data[k]); });
+    return 'https://wa.me/' + form.dataset.wa + '?text=' + encodeURIComponent(form.dataset.intro + '\n' + lines.join('\n'));
+  }
+  function sendEmail(data) {
+    var key = form.dataset.key || '';
+    if (!key || /HERE|REPLACE/i.test(key)) { console.warn('[catering] email key not set, WhatsApp only'); return; }
+    var body = { access_key: key, subject: 'New catering enquiry: ' + data.Name + (data.Event ? ' (' + data.Event + ')' : ''),
+      from_name: 'Swagramam website', botcheck: '' };
+    Object.keys(data).forEach(function (k) { body[k] = k === 'Phone' ? '+91 ' + data[k] : data[k]; });
+    body.message = Object.keys(data).map(function (k) { return k + ': ' + body[k]; }).join('\n');
+    try {
+      fetch(form.dataset.endpoint, { method: 'POST', keepalive: true,
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { if (!r.ok) console.warn('[catering] email endpoint returned', r.status); })
+        .catch(function (e) { console.warn('[catering] email failed', e); });
+    } catch (e) { console.warn('[catering] email failed', e); }
   }
 
-  /* 4. golden dust / fireflies, paused when off screen or tab hidden */
-  var ctx = canvas.getContext('2d'), W, H, dots = [], raf = 0, visible = false;
-  function size() {
-    var d = Math.min(window.devicePixelRatio || 1, 2);
-    W = canvas.clientWidth; H = canvas.clientHeight;
-    canvas.width = W * d; canvas.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0);
-    var n = Math.min(38, Math.round(W / 38));
-    dots = [];
-    for (var i = 0; i < n; i++) dots.push({
-      x: Math.random() * W, y: Math.random() * H, r: 0.8 + Math.random() * 2.2,
-      vx: (Math.random() - 0.5) * 0.18, vy: -0.08 - Math.random() * 0.28,
-      p: Math.random() * 6.28, s: 0.6 + Math.random() * 1.2
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var hp = form.elements.botcheck;
+    if (hp && hp.checked) return; /* bot: do nothing */
+    var valid = true, first = null;
+    ['Name', 'Phone', 'Date', 'Guests'].forEach(function (n) {
+      if (!check(n)) { valid = false; if (!first) first = $(n); }
     });
-  }
-  function tick(t) {
-    ctx.clearRect(0, 0, W, H);
-    for (var i = 0; i < dots.length; i++) {
-      var d = dots[i];
-      d.x += d.vx + Math.sin(t / 1800 + d.p) * 0.12; d.y += d.vy;
-      if (d.y < -6) { d.y = H + 6; d.x = Math.random() * W; }
-      var a = 0.25 + 0.45 * (0.5 + 0.5 * Math.sin(t / 700 * d.s + d.p));
-      var g = ctx.createRadialGradient(d.x, d.y, 0, d.x, d.y, d.r * 4);
-      g.addColorStop(0, 'rgba(236,178,52,' + a + ')'); g.addColorStop(1, 'rgba(236,178,52,0)');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(d.x, d.y, d.r * 4, 0, 6.28); ctx.fill();
+    if (!valid) { first.focus(); return; }
+
+    var data = collect(), url = waUrl(data);
+    btn.disabled = true;
+    /* open WhatsApp first and synchronously, so phone browsers do not block it */
+    window.open(url, '_blank', 'noopener');
+    sendEmail(data);
+    if (window.gtag) {
+      gtag('event', 'catering_enquiry', { event_type: data.Event || 'not_set', guests: data.Guests ? Number(data.Guests) : 0, has_date: !!data.Date, page: location.pathname });
     }
-    raf = requestAnimationFrame(tick);
+    ok.querySelector('.ch-nm').textContent = data.Name ? ', ' + data.Name.split(/\s+/)[0] : '';
+    ok.querySelector('.ch-ph').textContent = '+91 ' + data.Phone;
+    ok.querySelector('.ch-wa').href = url;
+    form.hidden = true; ok.hidden = false;
+    ok.focus({ preventScroll: true });
+    if (card.getBoundingClientRect().top < 0) card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+  });
+
+  ok.querySelector('.ch-again').addEventListener('click', function () {
+    form.reset(); btn.disabled = false;
+    form.querySelectorAll('[aria-invalid]').forEach(function (x) { x.removeAttribute('aria-invalid'); });
+    form.querySelectorAll('.cherr').forEach(function (x) { x.textContent = ''; });
+    ok.hidden = true; form.hidden = false; $('Name').focus();
+  });
+
+  /* ---- every "Get a quote" link scrolls to the form ---- */
+  function goForm(ev) {
+    ev.preventDefault();
+    card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    setTimeout(function () { var t = form.hidden ? ok : $('Name'); t.focus({ preventScroll: true }); }, reduce ? 0 : 450);
   }
-  function run() { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(tick); }
-  function halt() { cancelAnimationFrame(raf); raf = 0; }
-  size();
-  window.addEventListener('resize', size);
-  new IntersectionObserver(function (e) { visible = e[0].isIntersecting; visible ? run() : halt(); }).observe(stage);
-  document.addEventListener('visibilitychange', function () { document.hidden ? halt() : run(); });
+  document.querySelectorAll('a[href="#cq"]').forEach(function (a) { a.addEventListener('click', goForm); });
+
+  /* ---- sticky bar (phones): shown only while the form is off screen ---- */
+  var bar = document.getElementById('cq-bar');
+  if (bar && 'IntersectionObserver' in window) {
+    bar.hidden = false; bar.classList.add('off');
+    var seen = false;
+    new IntersectionObserver(function (en) {
+      var on = en[0].isIntersecting;
+      bar.classList.toggle('off', on);
+      document.body.classList.toggle('cq-bar-on', !on);
+      seen = true;
+    }, { threshold: 0.12 }).observe(card);
+  }
 })();

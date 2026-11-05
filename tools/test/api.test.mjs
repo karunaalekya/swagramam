@@ -30,7 +30,7 @@ async function login(env, phone = newPhone(), purpose = "checkout") {
   const s = await call(env, sendR, "/api/otp/send", { phone }); assert.ok(s.j.ok && s.j.devCode, "send ok");
   const v = await call(env, verR, "/api/otp/verify", { phone, code: s.j.devCode, purpose }); assert.ok(v.j.ok, "verify ok"); return { phone, token: v.j.token, v: v.j };
 }
-const thali = () => ({ sku: sku("Swagramam Aritaku Bhojanam"), qty: 1 });           // lunch only, Rs 299
+const thali = () => ({ sku: sku("Swagramam Aritaku Bhojanam"), qty: 1 });           // lunch only, Rs 349
 const soup = () => ({ sku: sku("Munakkaada Vadiyalu Charu"), qty: 1 });             // lunch+dinner, Rs 149
 const combo = ITEMS.find(i => i.meal === "d");                                       // dinner only
 const lunchSlot = { date: "2026-10-21", time: "13:00" }, dinnerSlot = { date: "2026-10-21", time: "20:00" };
@@ -50,9 +50,9 @@ test("payu hash formulas (request and reverse)", async () => {
   assert.equal(await responseHash({ ...p, status: "success" }, "K", "S"), sha("S|success|||||||||||a@b.c|A|P|10.00|T1|K"));
   assert.equal(await responseHash({ ...p, status: "success", udf1: "x", additionalCharges: "1.00" }, "K", "S"), sha("1.00|S|success||||||||||x|a@b.c|A|P|10.00|T1|K"));
 });
-test("menu: 99 skus, unique, server prices", () => { assert.equal(ITEMS.length, 99); assert.equal(new Set(ITEMS.map(i => i.sku)).size, 99); });
+test("menu: 123 skus, unique, server prices", () => { assert.equal(ITEMS.length, 123); assert.equal(new Set(ITEMS.map(i => i.sku)).size, 123); });
 test("menu and health endpoints", async () => {
-  const env = env0(); const m = await get(env, menuR, "/api/menu"); assert.ok(m.j.live); assert.equal(m.j.items.length, 99); assert.equal(m.j.gstAssumed, true);
+  const env = env0(); const m = await get(env, menuR, "/api/menu"); assert.ok(m.j.live); assert.equal(m.j.items.length, 123); assert.equal(m.j.gstAssumed, true);
   const h = await get(env, healthR, "/api/health"); assert.ok(h.j.live);
   const off = env0({ ONLINE_ORDER_LIVE: "false" }); assert.equal((await get(off, healthR, "/api/health")).j.live, false);
 });
@@ -71,7 +71,7 @@ test("slots: windows, Monday lunch end, prep time, today filter", async () => {
 });
 test("quote: server prices, GST, points, tampering ignored", async () => {
   const env = env0(); const q = await call(env, quoteR, "/api/quote", { lines: [thali(), { ...soup(), qty: 2, priceMinor: 1 }], slot: lunchSlot });
-  assert.equal(q.j.subtotalMinor, 29900 + 2 * 14900); assert.equal(q.j.taxMinor, gstMinor(q.j.subtotalMinor, 500)); assert.equal(q.j.totalMinor, q.j.subtotalMinor + q.j.taxMinor); assert.equal(q.j.pointsToEarn, 597);
+  assert.equal(q.j.subtotalMinor, 34900 + 2 * 14900); assert.equal(q.j.taxMinor, gstMinor(q.j.subtotalMinor, 500)); assert.equal(q.j.totalMinor, q.j.subtotalMinor + q.j.taxMinor); assert.equal(q.j.pointsToEarn, 647);
   assert.equal((await call(env, quoteR, "/api/quote", { lines: [{ sku: "nope", qty: 1 }] })).j.error, "unknown_item");
   assert.equal((await call(env, quoteR, "/api/quote", { lines: [{ sku: soup().sku, qty: 0 }] })).j.error, "bad_qty");
 });

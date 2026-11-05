@@ -7,9 +7,9 @@ const rawFromBaseline = () => { const d = toSanityDocs(baselineModel()).map(x =>
   return { categories: d.filter(x => x._type === "category"), dishes: d.filter(x => x._type === "dish") }; };
 const body = t => t.split("\n").slice(1).join("\n");
 
-test("unchanged Sanity data rebuilds the current site exactly (86 dishes)", () => {
+test("unchanged Sanity data rebuilds the current site exactly (109 dishes)", () => {
   const { model, files } = buildFiles(rawFromBaseline());
-  assert.equal(model.dishes.length, 86);
+  assert.equal(model.dishes.length, 109);
   assert.equal(files["order-data.js"], read("order-data.js"));
   assert.equal(files["menu.html"], read("menu.html"));
   assert.equal(body(files["functions/_lib/menu-data.js"]), body(read("functions/_lib/menu-data.js")));
@@ -42,7 +42,7 @@ test("reordering does not change item numbers; a new dish gets the next free num
   raw.dishes.push({ _id: "drafts-free-x", _createdAt: "2026-10-23T00:00:00Z", dishId: "new-dish", name: "New Dish", category: { _ref: "cat.ds" }, diet: "v", meal: "ld", price: 120, order: 5000 });
   const { files } = buildFiles(raw);
   assert.match(files["functions/_lib/menu-data.js"], /"sku":"dal-makhani","k":"33\|"/);
-  assert.match(files["functions/_lib/menu-data.js"], /"sku":"new-dish","k":"86\|"/);
+  assert.match(files["functions/_lib/menu-data.js"], /"sku":"new-dish","k":"109\|"/);
 });
 test("hidden dish disappears everywhere; sold out stays but is not available", () => {
   const raw = rawFromBaseline(); raw.dishes.find(d => d.name === "Goli Soda").hidden = true; raw.dishes.find(d => d.name === "Butter Milk").soldOut = true;

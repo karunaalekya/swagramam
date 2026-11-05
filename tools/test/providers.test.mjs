@@ -72,7 +72,7 @@ test("reelo enrol is local only; redemption and menu calls shaped right", async 
   assert.ok((await l.enrol("9101010101", "Ravi")).ok); assert.equal(calls.length, 0);
   await l.reserveRedemption("9101010101", { couponCode: "C1" }); assert.ok(calls[0].u.endsWith("/points/authenticate")); assert.equal(calls[0].body.coupon_code, "C1");
   await l.commit("9101010101", { couponCode: "C1", otp: "4191" }); assert.ok(calls[1].u.endsWith("/redeem/coupon")); assert.equal(calls[1].body.otp, "4191");
-  const m = await l.pushMenu(); assert.equal(m.count, 99); const it = calls[2].body.items; assert.equal(it.length, 99); assert.match(it[0].price, /^\d+\.0000$/); assert.equal(new Set(it.map(x => x.id)).size, 99);
+  const m = await l.pushMenu(); assert.equal(m.count, 123); const it = calls[2].body.items; assert.equal(it.length, 123); assert.match(it[0].price, /^\d+\.0000$/); assert.equal(new Set(it.map(x => x.id)).size, 123);
   assert.equal((await l.release()).unsupported, true);
 });
 test("reelo missing config: clear error, no crash", async () => {
