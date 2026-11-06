@@ -125,16 +125,14 @@
 /* slider */
 .ch-right{position:relative;background:#f6efd9;min-height:560px}
 .chs{position:absolute;inset:0;display:flex;flex-direction:column;color:var(--ch-ink,#23301f)}
-.chs-view{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:pan-y;container-type:inline-size}
+.chs-view{--chs-strip:88px;position:relative;flex:1;min-height:0;overflow:hidden;touch-action:pan-y;container-type:inline-size}
 .chs-sl{position:absolute;inset:0;transform:translate3d(-100%,0,0);will-change:transform;background:#f6efd9}
-.chs-sl img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 46%;mix-blend-mode:multiply;transform-origin:50% 55%}
+.chs-sl img{position:absolute;inset:0 0 var(--chs-strip) 0;width:100%;height:calc(100% - var(--chs-strip));object-fit:contain;object-position:50% 46%;mix-blend-mode:multiply;transform-origin:50% 55%}
 .chs-sl.on img{animation:chs-kb 9s ease-out both}
 @keyframes chs-kb{from{transform:scale(1)}to{transform:scale(1.045)}}
 .chs-sl.pt img{object-fit:cover;object-position:50% 72%;mix-blend-mode:normal}
-.chs-sl.sk{display:grid;place-items:center;background:radial-gradient(70% 55% at 50% 52%,#fbeec4 0%,#f6efd9 70%)}
-.chs-sl.sk img{position:static;width:88%;height:auto;max-height:46%;mix-blend-mode:multiply}
-.chs-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
-.chs-glow,.chs-sweep{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:0;transition:opacity .6s}
+.chs-fx{position:absolute;inset:0 0 var(--chs-strip) 0;width:100%;height:calc(100% - var(--chs-strip));pointer-events:none;z-index:3}
+.chs-glow,.chs-sweep{position:absolute;inset:0 0 var(--chs-strip) 0;pointer-events:none;z-index:2;opacity:0;transition:opacity .6s}
 .chs-glow{background:radial-gradient(60% 45% at 52% 78%,rgba(255,196,84,.45),rgba(255,196,84,0) 70%);animation:chs-glow 3.6s ease-in-out infinite alternate}
 @keyframes chs-glow{from{filter:brightness(.85)}to{filter:brightness(1.2)}}
 .chs-sweep{overflow:hidden}
@@ -145,14 +143,20 @@
 .chs[data-k="corporate"] .chs-sweep{opacity:1}
 
 /* hanging board on the village painting */
-.chs-board{position:absolute;z-index:4;left:6cqw;top:-2px;width:min(52cqw,300px);transform-origin:50% 0;opacity:0;transition:opacity .5s;
+.chs-board{position:absolute;z-index:4;left:50%;margin-left:calc(min(56cqw,280px) / -2);top:-2px;width:min(56cqw,280px);transform-origin:50% 0;opacity:1;
   animation:chs-swing 5s ease-in-out infinite alternate}
-.chs[data-k="village"] .chs-board{opacity:1}
 .chs-board::before,.chs-board::after{content:"";position:absolute;top:0;width:3px;height:30px;background:#5a3a1a}
 .chs-board::before{left:18%}.chs-board::after{right:18%}
-.chs-board div{margin-top:28px;padding:12px 10px;text-align:center;border:2px solid #F3C762;border-radius:8px;
+.chs-board div{margin-top:28px;padding:9px 10px 8px;text-align:center;border:2px solid #F3C762;border-radius:8px;
   background:repeating-linear-gradient(92deg,rgba(0,0,0,.06) 0 2px,transparent 2px 8px),linear-gradient(180deg,#9a5522,#63310f);
   box-shadow:0 8px 18px rgba(0,0,0,.35);color:#FFF3CC;font:800 clamp(.72rem,1.6cqw + .4rem,.98rem)/1.35 var(--bf,'DM Sans',system-ui,sans-serif);letter-spacing:.06em;text-transform:uppercase;text-shadow:0 1px 0 #2a1000}
+.chs-board b{display:block;font-size:1.18em;letter-spacing:.14em}
+.chs-board span{display:block;margin-top:2px;font-size:.66em;font-weight:700;letter-spacing:.12em;opacity:.92}
+.chs-brand{position:absolute;z-index:4;left:0;right:0;bottom:0;height:var(--chs-strip);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  background:#f6efd9;border-top:1px solid rgba(180,130,30,.28);pointer-events:none}
+.chs-brand>span{max-width:100%;padding:0 10px;box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;font:700 clamp(.56rem,2.4cqw + .1rem,.68rem)/1 var(--bf,"DM Sans",system-ui,sans-serif);letter-spacing:.12em;text-transform:uppercase;color:#7a4a12}
+.chs-dishes{display:flex;gap:12px}
+.chs-dishes img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #F3C762;box-shadow:0 3px 8px rgba(60,30,0,.25);background:#fff}@media(max-width:480px){.chs-view{--chs-strip:76px}.chs-dishes{gap:10px}.chs-dishes img{width:44px;height:44px}}@media(prefers-reduced-motion:reduce){.chs-board{animation:none}}
 @keyframes chs-swing{from{transform:rotate(-1.6deg)}to{transform:rotate(1.6deg)}}
 
 /* caption + controls */

@@ -128,7 +128,7 @@
     function rnd(a, b) { return a + Math.random() * (b - a); }
     function pick(a) { return a[(Math.random() * a.length) | 0]; }
     function size() {
-      var r = view.getBoundingClientRect();
+      var r = cv.getBoundingClientRect();
       dpr = Math.min(window.devicePixelRatio || 1, 2);
       w = Math.max(1, r.width); h = Math.max(1, r.height);
       cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
@@ -145,9 +145,9 @@
       var a = [], i, n = function (x) { return Math.round(x * N); };
       if (k === 'wedding') { for (i = 0; i < n(26); i++) a.push(petal()); for (i = 0; i < n(14); i++) a.push(spark(false)); }
       else if (k === 'feast') {
-        for (i = 0; i < n(7); i++) a.push(steam(w * .6, h * .76));
-        for (i = 0; i < n(5); i++) a.push(steam(w * .22, h * .42));
-        for (i = 0; i < n(4); i++) a.push(steam(w * .46, h * .4));
+        for (i = 0; i < n(4); i++) a.push(steam(w * .20, h * .435));
+        for (i = 0; i < n(4); i++) a.push(steam(w * .305, h * .44));
+        for (i = 0; i < n(3); i++) a.push(steam(w * .39, h * .435));
         for (i = 0; i < n(8); i++) a.push(mote());
       }
       else if (k === 'birthday') { for (i = 0; i < n(36); i++) a.push(conf()); for (i = 0; i < n(8); i++) a.push(spark(true)); }
