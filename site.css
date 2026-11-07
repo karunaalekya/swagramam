@@ -3302,3 +3302,28 @@ html.pt-leave body{opacity:0;transform:translateY(-8px);transition:opacity .3s e
 .cz-strip h3{font:400 26px/1.15 var(--hf);color:#fff}
 header#hd .hact a{position:relative}
 header#hd .hact a::after{content:"";position:absolute;inset:-4px}
+
+/* ===== v133 mobile fixes: sketch first, nav, floating buttons, catering ending ===== */
+/* intro: the sketch and its layout numbers exist before any script runs, and the sketch is never masked out */
+#sx{--sk:url(assets/f5b72e1523.webp);--pt:url(assets/4734bbe90a.webp);--W:max(100vw,150vh);--zox:22%;--panx:0px;--sc0:1.32;--arty:50%}
+@media(max-width:700px){#sx{--pt:url(assets/4734bbe90a-960w.webp)}}
+@media(max-aspect-ratio:4/5){#sx{--W:100vw;--zox:50%;--sc0:1.1;--arty:60%}}
+#sx .sx-sk{-webkit-mask:none;mask:none}
+/* phones: sketch on paper first, then the painting fades in (2.6s = start, 2s = length) */
+#sx.por{background:radial-gradient(circle at 50% 45%,#f6e6b8,#dcbb74)}
+#sx.por::before,#sx.por .sx-pimg{opacity:0}
+#sx.por.go::before,#sx.por.go .sx-pimg{animation:sx-vis 2s 2.6s ease forwards}
+/* nav + floating buttons on phones */
+@media(max-width:700px){
+.nvl{display:none}
+html:not(#_) .fab .fi{display:none!important}
+html:not(#_) body:has(#ckb:not([hidden])) .fab{visibility:hidden}
+}
+/* catering: one quote button at a time, readable ending */
+#cq-bar.cq-off{display:none!important}
+@media(max-width:700px){
+body[data-pg="catering"] #cta .cg{position:relative;z-index:2;background:#103A27!important;border:2px solid #F7B12E;border-radius:20px;padding:22px 18px!important;margin:0 14px}
+body[data-pg="catering"] #cta .cg :is(h2,p,small){color:#FFF3CC!important;-webkit-text-fill-color:#FFF3CC!important;background:none!important;text-shadow:none!important}
+body[data-pg="catering"] #cta .cg a:not(.btn){color:#F7B12E!important}
+body[data-pg="catering"] #cta .v10b .btn{background:#F7B12E!important;color:#103A27!important;border-color:#F7B12E!important;opacity:1!important}
+}
