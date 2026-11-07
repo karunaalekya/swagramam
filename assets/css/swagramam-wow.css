@@ -246,3 +246,6 @@
   .chs-b{width:40px;height:40px}.chs-dot{width:20px;height:40px}
   .chs-ft{gap:2px 10px}
 }
+
+/* name board clear of the fixed header (desktop) */
+@media(min-width:901px){.chs-board{top:44px}}
