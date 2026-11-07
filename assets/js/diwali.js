@@ -3,7 +3,7 @@ var S=Date.UTC(2026,10,6,18,30),E=Date.UTC(2026,10,8,18,30),n=Date.now();
 var f=/[?&]diwali=1/.test(location.search);
 if(!f&&(n<S||n>=E))return;
 try{if(!f&&sessionStorage.getItem("swg-dw"))return}catch(e){}
-var rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+function show(){var rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
 var css="#dw{position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;justify-content:center;padding:16px 16px max(18px,env(safe-area-inset-bottom));overflow:hidden;background:url(assets/diwali-l.webp) 50% 100%/cover no-repeat,radial-gradient(ellipse at 50% 105%,#1d5f40,#0a2418 55%,#03100a);opacity:0;transition:opacity .45s cubic-bezier(.16,1,.3,1)}#dw.on{opacity:1}"
 +"#dw::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,transparent 35%,rgba(3,16,10,.6));pointer-events:none}#dw canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}"
 +"#dw .c{position:relative;max-width:400px;width:100%;padding:16px 20px 20px;text-align:center;color:#FFF3CC;background:rgba(8,32,21,.74);border:2px solid #F3C762;border-radius:24px;box-shadow:0 0 50px rgba(243,199,98,.22);opacity:0;transform:scale(.95);transform-origin:50% 100%;transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}#dw.sh .c{opacity:1;transform:none}"
@@ -70,4 +70,11 @@ tw=.65+.35*Math.sin(tt*5+p.o);x.globalAlpha=tw*Math.min(1,a*3);x.fillStyle=p.c;x
 if(F>0){x.globalAlpha=F*.3;x.fillStyle="#FFE2A0";x.fillRect(0,0,W,H);F-=.04*k}
 requestAnimationFrame(lp)}
 requestAnimationFrame(lp);
+}
+var gs=0,vs=0,g0=Date.now();
+function go(){if(gs)return;gs=1;try{show()}catch(e){}}
+function iv(){var e=document.getElementById("sx");if(!e||!e.isConnected)return false;var c=getComputedStyle(e);return c.display!=="none"&&c.visibility!=="hidden"&&parseFloat(c.opacity)>.05}
+document.addEventListener("sx:enter",function(){setTimeout(go,1600)});
+if(document.documentElement.classList.contains("sx-seen")||!document.getElementById("sx")){setTimeout(go,600)}
+else{var pi=setInterval(function(){if(gs){clearInterval(pi);return}if(iv()){vs=1;return}if(vs||Date.now()-g0>8000){clearInterval(pi);setTimeout(go,900)}},300)}
 })();
