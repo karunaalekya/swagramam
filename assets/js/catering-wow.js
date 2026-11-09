@@ -74,19 +74,31 @@
     var lines = Object.keys(data).map(function (k) { return k + ': ' + (k === 'Phone' ? '+91 ' + data[k] : data[k]); });
     return 'https://wa.me/' + form.dataset.wa + '?text=' + encodeURIComponent(form.dataset.intro + '\n' + lines.join('\n'));
   }
+  function niceDate(v) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
+    if (!m) return '';
+    return Number(m[3]) + ' ' + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(m[2]) - 1] + ' ' + m[1];
+  }
   function sendEmail(data) {
-    var key = form.dataset.key || '';
-    if (!key || /HERE|REPLACE/i.test(key)) { console.warn('[catering] email key not set, WhatsApp only'); return; }
-    var body = { access_key: key, subject: 'New catering enquiry: ' + data.Name + (data.Event ? ' (' + data.Event + ')' : ''),
-      from_name: 'Swagramam website', botcheck: '' };
-    Object.keys(data).forEach(function (k) { body[k] = k === 'Phone' ? '+91 ' + data[k] : data[k]; });
-    body.message = Object.keys(data).map(function (k) { return k + ': ' + body[k]; }).join('\n');
-    try {
-      fetch(form.dataset.endpoint, { method: 'POST', keepalive: true,
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body) })
-        .then(function (r) { if (!r.ok) console.warn('[catering] email endpoint returned', r.status); })
-        .catch(function (e) { console.warn('[catering] email failed', e); });
-    } catch (e) { console.warn('[catering] email failed', e); }
+    var d = niceDate(data.Date), ph = data.Phone || '';
+    var body = { access_key: form.dataset.key || '',
+      subject: '[Swagramam] Catering enquiry \u2013 ' + (data.Event || 'Enquiry') + ' \u2013 ' + (d || 'date not given'),
+      from_name: 'Swagramam website', botcheck: '',
+      'Name': data.Name || '', 'Phone': '+91 ' + ph, 'Call': 'tel:+91' + ph, 'WhatsApp': 'https://wa.me/91' + ph,
+      'Event type': data.Event || '', 'Event date': d, 'Number of guests': data.Guests || '',
+      'Venue / location': data.Venue || '', 'Requirements': data.Notes || '', 'Submitted from': location.href };
+    return fetch(form.dataset.endpoint, { method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || !j.success) throw new Error('send failed'); }); });
+  }
+  var fail = form.querySelector('.ch-fail');
+  function showFail() {
+    fail.innerHTML = '';
+    fail.appendChild(document.createTextNode("Sorry, that didn't go through. Please "));
+    var a = document.createElement('a');
+    a.href = 'https://wa.me/' + form.dataset.wa + '?text=' + encodeURIComponent(form.dataset.intro);
+    a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'WhatsApp us';
+    fail.appendChild(a); fail.hidden = false;
   }
 
   form.addEventListener('submit', function (e) {
@@ -100,23 +112,22 @@
     if (!valid) { first.focus(); return; }
 
     var data = collect(), url = waUrl(data);
-    btn.disabled = true;
-    /* open WhatsApp first and synchronously, so phone browsers do not block it */
-    window.open(url, '_blank', 'noopener');
-    sendEmail(data);
-    if (window.gtag) {
-      gtag('event', 'catering_enquiry', { event_type: data.Event || 'not_set', guests: data.Guests ? Number(data.Guests) : 0, has_date: !!data.Date, page: location.pathname });
-    }
-    ok.querySelector('.ch-nm').textContent = data.Name ? ', ' + data.Name.split(/\s+/)[0] : '';
-    ok.querySelector('.ch-ph').textContent = '+91 ' + data.Phone;
-    ok.querySelector('.ch-wa').href = url;
-    form.hidden = true; ok.hidden = false;
-    ok.focus({ preventScroll: true });
-    if (card.getBoundingClientRect().top < 0) card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    fail.hidden = true; btn.disabled = true;
+    sendEmail(data).then(function () {
+      if (window.gtag) {
+        gtag('event', 'catering_enquiry', { event_type: data.Event || 'not_set', guests: data.Guests ? Number(data.Guests) : 0, has_date: !!data.Date, page: location.pathname });
+      }
+      ok.querySelector('.ch-nm').textContent = data.Name ? ', ' + data.Name.split(/\s+/)[0] : '';
+      ok.querySelector('.ch-ph').textContent = '+91 ' + data.Phone;
+      ok.querySelector('.ch-wa').href = url;
+      form.hidden = true; ok.hidden = false;
+      ok.focus({ preventScroll: true });
+      if (card.getBoundingClientRect().top < 0) card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    }).catch(function () { btn.disabled = false; showFail(); });
   });
 
   ok.querySelector('.ch-again').addEventListener('click', function () {
-    form.reset(); btn.disabled = false;
+    form.reset(); btn.disabled = false; fail.hidden = true;
     form.querySelectorAll('[aria-invalid]').forEach(function (x) { x.removeAttribute('aria-invalid'); });
     form.querySelectorAll('.cherr').forEach(function (x) { x.textContent = ''; });
     ok.hidden = true; form.hidden = false; $('Name').focus();

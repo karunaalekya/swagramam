@@ -266,3 +266,5 @@
 .fs-wab:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media(max-width:900px){.fs{padding:40px 0}.fs-in{grid-template-columns:1fr;gap:26px}.fs-feat{grid-template-columns:1fr 1fr}}
 @media(max-width:420px){.fs-feat{grid-template-columns:1fr}}
+
+.ch-fail{margin:0;font:600 .85rem/1.4 var(--bf,'DM Sans',sans-serif);color:var(--ch-err)}.ch-fail[hidden]{display:none}.ch-fail a{color:var(--ch-g);text-decoration:underline}.ch-btn:disabled{opacity:.7;cursor:progress}
