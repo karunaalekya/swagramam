@@ -39,6 +39,7 @@
       if (!v.trim()) return 'Please enter your mobile number.';
       return /^[6-9]\d{9}$/.test(cleanPhone(v)) ? '' : 'Enter a valid 10-digit Indian mobile number.';
     },
+    Email: function (v) { return v.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? 'Enter a valid email, or leave it empty.' : ''; },
     Date: function (v) { return v && v < today ? 'Please pick today or a later date.' : ''; },
     Guests: function (v) {
       if (!v) return '';
@@ -61,7 +62,7 @@
   /* ---- submit ---- */
   function collect() {
     var data = {};
-    ['Name', 'Phone', 'Event', 'Date', 'Guests', 'Venue', 'Notes'].forEach(function (n) {
+    ['Name', 'Phone', 'Email', 'Event', 'Date', 'Guests', 'Venue', 'Notes'].forEach(function (n) {
       var el = $(n), v = '';
       if (n === 'Event') v = (form.querySelector('input[name="Event"]:checked') || {}).value || '';
       else v = el.value.trim();
@@ -84,7 +85,7 @@
     var body = { access_key: form.dataset.key || '',
       subject: '[Swagramam] Catering enquiry \u2013 ' + (data.Event || 'Enquiry') + ' \u2013 ' + (d || 'date not given'),
       from_name: 'Swagramam website', botcheck: '',
-      'Name': data.Name || '', 'Phone': '+91 ' + ph, 'Call': 'tel:+91' + ph, 'WhatsApp': 'https://wa.me/91' + ph,
+      'Name': data.Name || '', 'Phone': '+91 ' + ph, 'Email': data.Email || '', 'Call': 'tel:+91' + ph, 'WhatsApp': 'https://wa.me/91' + ph,
       'Event type': data.Event || '', 'Event date': d, 'Number of guests': data.Guests || '',
       'Venue / location': data.Venue || '', 'Requirements': data.Notes || '', 'Submitted from': location.href };
     return fetch(form.dataset.endpoint, { method: 'POST',
@@ -106,7 +107,7 @@
     var hp = form.elements.botcheck;
     if (hp && hp.checked) return; /* bot: do nothing */
     var valid = true, first = null;
-    ['Name', 'Phone', 'Date', 'Guests'].forEach(function (n) {
+    ['Name', 'Phone', 'Email', 'Date', 'Guests'].forEach(function (n) {
       if (!check(n)) { valid = false; if (!first) first = $(n); }
     });
     if (!valid) { first.focus(); return; }

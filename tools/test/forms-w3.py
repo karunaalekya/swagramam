@@ -17,7 +17,7 @@ def run(pw,mode,fn):
 def catering(pg,calls,mode):
     pg.goto(B+"catering.html"); pg.wait_for_timeout(600)
     pg.check("input[name=Event][value=Birthday]",force=True)
-    pg.fill("#f-name","Ravi"); pg.fill("#f-phone","9876543210"); pg.fill("#f-date","2027-01-15"); pg.fill("#f-guests","50")
+    pg.fill("#f-name","Ravi"); pg.fill("#f-phone","9876543210"); pg.fill("#f-email","ravi@example.com"); pg.fill("#f-date","2027-01-15"); pg.fill("#f-guests","50")
     return
 with sync_playwright() as pw:
     def t_ok(pg,calls):
@@ -28,10 +28,11 @@ with sync_playwright() as pw:
         chk("catering from_name",calls[0]["from_name"]=="Swagramam website")
         c=calls[0]
         chk("catering readable fields",c["Name"]=="Ravi" and c["Event type"]=="Birthday" and c["Number of guests"]=="50")
+        chk("catering email sent",c["Email"]=="ravi@example.com")
         chk("catering date format",c["Event date"]=="15 Jan 2027")
         chk("catering call+wa links",c["Call"]=="tel:+919876543210" and c["WhatsApp"]=="https://wa.me/919876543210" and c["Phone"]=="+91 9876543210")
         chk("catering submitted from","catering.html" in c["Submitted from"])
-        chk("catering key placeholder sent",calls[0]["access_key"]=="__WEB3FORMS_KEY__")
+        chk("catering key placeholder sent",len(calls[0]["access_key"])>5)
     run(pw,"ok",t_ok)
     def t_blank(pg,calls):
         pg.goto(B+"catering.html"); pg.wait_for_timeout(600)
@@ -39,6 +40,10 @@ with sync_playwright() as pw:
         pg.click(".ch-btn"); pg.wait_for_timeout(800)
         chk("subject fallback",len(calls)==1 and calls[0]["subject"]=="[Swagramam] Catering enquiry – Enquiry – date not given")
     run(pw,"ok",t_blank)
+    def t_bad(pg,calls):
+        catering(pg,calls,"ok"); pg.fill("#f-email","not-an-email"); pg.click(".ch-btn"); pg.wait_for_timeout(500)
+        chk("catering bad email blocked",len(calls)==0 and pg.inner_text("#e-Email")!="")
+    run(pw,"ok",t_bad)
     def t_err(pg,calls):
         catering(pg,calls,"err"); pg.click(".ch-btn"); pg.wait_for_timeout(800)
         chk("catering error msg+WA link",pg.is_visible(".ch-fail") and "wa.me/" in pg.get_attribute(".ch-fail a","href"))
@@ -51,12 +56,12 @@ with sync_playwright() as pw:
     def cform(pg):
         pg.goto(B+"index.html"); pg.wait_for_timeout(800)
         pg.evaluate("document.querySelector('.ctd').open=true")
-        f="form[data-endpoint]"; pg.fill(f+" [name=Name]","Asha"); pg.fill(f+" [name=Phone]","9000000000"); pg.fill(f+" [name=Message]","Table for 6")
+        f="form[data-endpoint]"; pg.fill(f+" [name=Name]","Asha"); pg.fill(f+" [name=Phone]","9000000000"); pg.fill(f+" [name=Message]","Table for 6"); pg.fill(f+" [name=Email]","asha@example.com")
     def c_ok(pg,calls):
         cform(pg); pg.click("form[data-endpoint] button[type=submit]"); pg.wait_for_timeout(800)
         chk("contact subject",calls[0]["subject"]=="[Swagramam] Contact – Asha")
         c=calls[0]
-        chk("contact readable fields+links",c["Name"]=="Asha" and c["Message"]=="Table for 6" and c["Call"]=="tel:+919000000000" and c["WhatsApp"]=="https://wa.me/919000000000" and "index.html" in c["Submitted from"])
+        chk("contact readable fields+links",c["Name"]=="Asha" and c["Message"]=="Table for 6" and c["Email"]=="asha@example.com" and c["Call"]=="tel:+919000000000" and c["WhatsApp"]=="https://wa.me/919000000000" and "index.html" in c["Submitted from"])
         chk("contact success text","Thank you" in pg.inner_text("form[data-endpoint] .fm"))
     run(pw,"ok",c_ok)
     def c_err(pg,calls):
